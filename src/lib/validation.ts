@@ -1,20 +1,14 @@
-export const MIN_PASSWORD_LENGTH = 6;
-
-export const MAX_FILE_SIZE_MB = 5;
-export const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
-
-export const EMAIL_REQUIRED = "Voer je e-mailadres in";
-export const EMAIL_INVALID = "Voer een geldig e-mailadres in";
-export const RESET_EMAIL_INVALID = "Voer eerst een geldig e-mailadres in";
-export const PASSWORD_REQUIRED = "Voer je wachtwoord in";
-export const PASSWORD_TOO_SHORT = `Wachtwoord moet minstens ${MIN_PASSWORD_LENGTH} tekens bevatten`;
-
-export const FILE_NOT_IMAGE = "Selecteer een afbeeldingsbestand";
-export const FILE_TOO_LARGE = `Bestand moet kleiner zijn dan ${MAX_FILE_SIZE_MB}MB`;
+import {
+  EMAIL_INVALID,
+  EMAIL_REGEX,
+  EMAIL_REQUIRED,
+  MIN_PASSWORD_LENGTH,
+  PASSWORD_REQUIRED,
+  PASSWORD_TOO_SHORT,
+} from "./constants";
 
 export const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  return EMAIL_REGEX.test(email);
 };
 
 export const validatePassword = (password: string): boolean => {

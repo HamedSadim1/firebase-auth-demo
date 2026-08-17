@@ -7,8 +7,11 @@ import { focusRing } from "../lib/styles";
 import {
   FILE_NOT_IMAGE,
   FILE_TOO_LARGE,
+  IMAGE_INPUT_ACCEPT,
+  IMAGE_MIME_PREFIX,
   MAX_FILE_SIZE_BYTES,
-} from "../lib/validation";
+  UPLOAD_FILENAME_PREFIX,
+} from "../lib/constants";
 import { UploadIcon, UserIcon, WarningIcon, CheckIcon } from "../svg/index";
 
 interface FileUploadProps {
@@ -32,7 +35,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith("image/")) {
+    if (!file.type.startsWith(IMAGE_MIME_PREFIX)) {
       setError(FILE_NOT_IMAGE);
       return;
     }
@@ -49,7 +52,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     try {
       // Create a unique filename
       const timestamp = Date.now();
-      const filename = `profile-${timestamp}-${file.name}`;
+      const filename = `${UPLOAD_FILENAME_PREFIX}-${timestamp}-${file.name}`;
       const storageRef = ref(storage, `${STORAGE_UPLOAD_PATH}/${filename}`);
 
       // Upload file
@@ -104,7 +107,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           <input
             ref={inputRef}
             type="file"
-            accept="image/*"
+            accept={IMAGE_INPUT_ACCEPT}
             onChange={(e) => void handleFileSelect(e)}
             disabled={uploading}
             className="hidden"

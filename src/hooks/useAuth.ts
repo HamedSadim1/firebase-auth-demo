@@ -14,12 +14,18 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { getAuthErrorMessage } from "../lib/errors";
-import { RESET_EMAIL_INVALID, validateEmail } from "../lib/validation";
+import { validateEmail } from "../lib/validation";
 import { AuthState, LoadingAction } from "../lib/types";
-import { TIMEOUT_MS, TIMEOUT_MESSAGE, withTimeout } from "../lib/async";
+import { withTimeout } from "../lib/async";
+import {
+  DISPLAY_NAME_FALLBACK,
+  RESET_EMAIL_INVALID,
+  TIMEOUT_MS,
+  TIMEOUT_MESSAGE,
+} from "../lib/constants";
 
 const getUserDisplayName = (user: User): string =>
-  user.displayName ?? user.email ?? "Gebruiker";
+  user.displayName ?? user.email ?? DISPLAY_NAME_FALLBACK;
 
 export interface AuthApi {
   authState: AuthState;

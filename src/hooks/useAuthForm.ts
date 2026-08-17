@@ -1,12 +1,11 @@
 import { useState, type ChangeEvent } from "react";
 import {
-  EMAIL_INVALID,
-  PASSWORD_TOO_SHORT,
   getEmailError,
   getPasswordError,
   validateEmail,
   validatePassword,
 } from "../lib/validation";
+import { EMAIL_INVALID, PASSWORD_TOO_SHORT } from "../lib/constants";
 import { FormState } from "../lib/types";
 
 const INITIAL_FORM_STATE: FormState = {
