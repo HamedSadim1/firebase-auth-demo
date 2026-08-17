@@ -24,13 +24,13 @@ const requiredEnvVars = [
 ];
 
 const missingVars = requiredEnvVars.filter(
-  (varName) => !import.meta.env[varName]
+  (varName) => !import.meta.env[varName],
 );
 
 if (missingVars.length > 0) {
   throw new Error(
     `Missing required environment variables: ${missingVars.join(", ")}\n` +
-      "Please check your .env file and ensure all Firebase configuration variables are set."
+      "Please check your .env file and ensure all Firebase configuration variables are set.",
   );
 }
 

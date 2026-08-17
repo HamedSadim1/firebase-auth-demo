@@ -4,7 +4,9 @@ interface UploadIconProps {
   className?: string;
 }
 
-export const UploadIcon: React.FC<UploadIconProps> = ({ className = "w-5 h-5" }) => (
+export const UploadIcon: React.FC<UploadIconProps> = ({
+  className = "w-5 h-5",
+}) => (
   <svg
     className={className}
     fill="none"

@@ -51,7 +51,7 @@ function App() {
   };
 
   const getUserDisplayName = (user: User): string => {
-    return user.displayName || user.email || "";
+    return user.displayName ?? user.email ?? "";
   };
 
   const clearForm = () => {
@@ -76,7 +76,7 @@ function App() {
   };
 
   // DRY: Styling constants
-  const getInputClasses = (hasError: boolean = false) => `
+  const getInputClasses = (hasError = false) => `
     w-full pl-4 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${
       isDarkMode
         ? `bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:bg-gray-800 ${
@@ -142,7 +142,7 @@ function App() {
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           formState.email,
-          formState.password
+          formState.password,
         );
         setAuthState((prev) => ({
           ...prev,
@@ -153,7 +153,7 @@ function App() {
         const userCredential = await signInWithEmailAndPassword(
           auth,
           formState.email,
-          formState.password
+          formState.password,
         );
         setAuthState((prev) => ({
           ...prev,
@@ -170,7 +170,7 @@ function App() {
       setAuthState((prev) => ({
         ...prev,
         name: getUserDisplayName(user),
-        photoUrl: user.photoURL || "",
+        photoUrl: user.photoURL ?? "",
       }));
       clearForm();
     });
@@ -250,7 +250,7 @@ function App() {
                   isSignUp: !prev.isSignUp,
                 }))
               }
-              onSubmit={handleEmailAuth}
+              onSubmit={(e) => void handleEmailAuth(e)}
               getInputClasses={getInputClasses}
               getLabelClasses={getLabelClasses}
               getButtonClasses={getButtonClasses}
@@ -258,7 +258,7 @@ function App() {
 
             <div className="px-8 pb-8">
               <GoogleSignInButton
-                onClick={signIn}
+                onClick={() => void signIn()}
                 loading={authState.loading}
                 getButtonClasses={getButtonClasses}
               />
@@ -269,7 +269,7 @@ function App() {
             name={authState.name}
             photoUrl={authState.photoUrl}
             isDarkMode={isDarkMode}
-            onSignOut={signOutUser}
+            onSignOut={() => void signOutUser()}
             onPhotoUpload={handlePhotoUpload}
             loading={authState.loading}
           />

@@ -94,6 +94,24 @@ npm run build
 npm run preview
 ```
 
+## 🧰 Development Tooling
+
+This project ships with linting and commit tooling wired up via [husky](https://typicode.github.io/husky/):
+
+| Command                | What it does                                               |
+| ---------------------- | ---------------------------------------------------------- |
+| `npm run lint`         | Run ESLint (full recommended + type-checked + React rules) |
+| `npm run lint:fix`     | Run ESLint and auto-fix issues                             |
+| `npm run format`       | Format all files with Prettier                             |
+| `npm run format:check` | Check formatting without changing files                    |
+| `npm run typecheck`    | Run `tsc --noEmit` to check types                          |
+
+- **ESLint** (`eslint.config.js`) — flat config with `@eslint/js` recommended, `typescript-eslint` recommended + stylistic (type-checked), `eslint-plugin-react`, `react-hooks`, and `react-refresh` rules.
+- **Prettier** (`.prettierrc.json`) — code formatter; `eslint-config-prettier` disables the ESLint rules that would conflict with it.
+- **Commit messages** must follow [Conventional Commits](https://www.conventionalcommits.org/) — enforced by `commitlint` on `git commit` (e.g. `feat: add login`, `fix: correct validation`).
+- **Staged files** are formatted with Prettier and linted/auto-fixed with ESLint on `git commit` via `lint-staged`.
+- **Pre-push** runs `typecheck` and `lint` to keep the branch green.
+
 ## 🔒 Security Notes
 
 - Never commit your `.env` file to version control

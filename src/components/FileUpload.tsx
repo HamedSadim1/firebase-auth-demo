@@ -70,7 +70,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             }`}
           >
             <img
-              src={previewUrl || currentPhotoUrl || ""}
+              src={previewUrl ?? currentPhotoUrl ?? ""}
               alt="Profile"
               className="w-full h-full object-cover"
               onError={(e) => {
@@ -98,7 +98,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             id="file-upload"
             type="file"
             accept="image/*"
-            onChange={handleFileSelect}
+            onChange={(e) => void handleFileSelect(e)}
             disabled={uploading}
             className="hidden"
           />

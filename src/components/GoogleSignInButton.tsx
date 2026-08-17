@@ -17,7 +17,7 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
       onClick={onClick}
       disabled={loading}
       className={`${getButtonClasses(
-        "secondary"
+        "secondary",
       )} flex items-center justify-center gap-3`}
     >
       {loading ? (
