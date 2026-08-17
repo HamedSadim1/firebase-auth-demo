@@ -1,33 +1,128 @@
-# Getting Started with Create React App
+# Firebase Authentication Demo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React application demonstrating Firebase authentication with both Google OAuth and email/password authentication, built with Vite and styled with Tailwind CSS v4.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- **Google OAuth Authentication** - Sign in with Google account
+- **Email/Password Authentication** - Register and login with email and password
+- **Modern UI** - Beautiful, responsive design with Tailwind CSS
+- **Loading States** - Visual feedback during authentication
+- **Error Handling** - Comprehensive error messages
+- **TypeScript** - Full type safety
 
-### `npm start`
+## 🛠️ Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **Tailwind CSS v4** - Utility-first CSS framework
+- **Firebase Authentication** - Authentication service
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 📋 Prerequisites
 
-### `npm test`
+- Node.js (v16 or higher)
+- npm or yarn
+- Firebase project
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🔧 Setup
 
-### `npm run build`
+1. **Clone the repository**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```bash
+   git clone <repository-url>
+   cd firebase-basics
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. **Install dependencies**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   ```bash
+   npm install
+   ```
+
+3. **Environment Configuration**
+
+   Copy the example environment file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Fill in your Firebase configuration in `.env`:
+
+   ```env
+   # Get these from Firebase Console > Project Settings > General > Your apps
+   VITE_FIREBASE_API_KEY=your_api_key_here
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+
+   # App configuration
+   VITE_APP_TITLE=Firebase Auth Demo
+   VITE_APP_VERSION=1.0.0
+   ```
+
+4. **Firebase Setup**
+
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Create a new project or use existing one
+   - Enable Authentication in the Firebase Console
+   - Configure sign-in methods (Google and Email/Password)
+   - Copy the config values to your `.env` file
+
+## 🚀 Running the Application
+
+### Development
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## 🔒 Security Notes
+
+- Never commit your `.env` file to version control
+- The `.env` file is automatically ignored by git
+- Use `.env.example` as a template for other developers
+- All Firebase config values are exposed to the client-side (this is normal for Firebase)
+
+## 📁 Project Structure
+
+```
+src/
+├── App.tsx              # Main application component
+├── firebaseConfig.tsx   # Firebase configuration
+├── index.tsx           # Application entry point
+├── vite-env.d.ts       # Vite environment types
+└── ...
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ### `npm run eject`
 
