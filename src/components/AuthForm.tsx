@@ -6,12 +6,20 @@ import {
   EyeClosedIcon,
   ArrowRightIcon,
 } from "./index";
+import { GoogleSignInButton } from "./GoogleSignInButton";
+import {
+  getButtonClasses,
+  getInputClasses,
+  getLabelClasses,
+} from "../lib/styles";
 
 interface FormState {
   email: string;
   password: string;
   emailError: string;
   passwordError: string;
+  emailTouched: boolean;
+  passwordTouched: boolean;
   showPassword: boolean;
   rememberMe: boolean;
 }
@@ -21,17 +29,18 @@ interface AuthFormProps {
   isSignUp: boolean;
   loading: boolean;
   resetLoading: boolean;
+  googleLoading: boolean;
   busy: boolean;
   onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onEmailBlur: () => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPasswordBlur: () => void;
   onTogglePassword: () => void;
   onRememberMeChange: (checked: boolean) => void;
   onToggleSignUp: () => void;
   onForgotPassword: () => void;
+  onGoogleSignIn: () => void;
   onSubmit: (e: React.FormEvent) => void;
-  getInputClasses: (hasError?: boolean) => string;
-  getLabelClasses: () => string;
-  getButtonClasses: (variant?: "primary" | "secondary") => string;
 }
 
 export const AuthForm: React.FC<AuthFormProps> = ({
@@ -39,21 +48,26 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   isSignUp,
   loading,
   resetLoading,
+  googleLoading,
   busy,
   onEmailChange,
+  onEmailBlur,
   onPasswordChange,
+  onPasswordBlur,
   onTogglePassword,
   onRememberMeChange,
   onToggleSignUp,
   onForgotPassword,
+  onGoogleSignIn,
   onSubmit,
-  getInputClasses,
-  getLabelClasses,
-  getButtonClasses,
 }) => {
+  const showEmailError = formState.emailTouched && !!formState.emailError;
+  const showPasswordError =
+    formState.passwordTouched && !!formState.passwordError;
+
   return (
     <div className="space-y-6">
-      <form onSubmit={onSubmit} className="space-y-5">
+      <form onSubmit={onSubmit} noValidate className="space-y-5">
         <div>
           <label htmlFor="email" className={getLabelClasses()}>
             E-mailadres
@@ -64,8 +78,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               id="email"
               value={formState.email}
               onChange={onEmailChange}
-              required
-              className={getInputClasses(!!formState.emailError)}
+              onBlur={onEmailBlur}
+              aria-invalid={showEmailError}
+              aria-describedby={showEmailError ? "email-error" : undefined}
+              className={getInputClasses(showEmailError)}
               placeholder="jij@voorbeeld.com"
             />
             <div className="absolute right-3 top-3.5">
@@ -74,8 +90,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               )}
             </div>
           </div>
-          {formState.emailError && (
-            <p className="mt-1 text-sm text-danger flex items-center">
+          {showEmailError && (
+            <p
+              id="email-error"
+              className="mt-1 text-sm text-danger flex items-center"
+            >
               <WarningIcon className="w-4 h-4 mr-1" />
               {formState.emailError}
             </p>
@@ -92,28 +111,39 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               id="password"
               value={formState.password}
               onChange={onPasswordChange}
-              required
-              minLength={6}
-              className={`${getInputClasses(!!formState.passwordError)} pr-12`}
+              onBlur={onPasswordBlur}
+              aria-invalid={showPasswordError}
+              aria-describedby={
+                showPasswordError ? "password-error" : undefined
+              }
+              className={`${getInputClasses(showPasswordError)} pr-12`}
               placeholder="Voer je wachtwoord in"
             />
             <button
               type="button"
               onClick={onTogglePassword}
+              aria-label={
+                formState.showPassword
+                  ? "Verberg wachtwoord"
+                  : "Toon wachtwoord"
+              }
               className="absolute right-3 top-3.5 rounded transition-all duration-200 text-muted-dim hover:text-muted hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber"
             >
               {formState.showPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
             </button>
           </div>
-          {formState.passwordError && (
-            <p className="mt-1 text-sm text-danger flex items-center">
+          {showPasswordError && (
+            <p
+              id="password-error"
+              className="mt-1 text-sm text-danger flex items-center"
+            >
               <WarningIcon className="w-4 h-4 mr-1" />
               {formState.passwordError}
             </p>
           )}
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <label
             htmlFor="remember-me"
             className="flex items-center cursor-pointer"
@@ -124,7 +154,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               type="checkbox"
               checked={formState.rememberMe}
               onChange={(e) => onRememberMeChange(e.target.checked)}
-              className="h-4 w-4 rounded accent-amber focus:ring-amber bg-input border-panel-line"
+              className="h-4 w-4 rounded accent-amber focus-visible:ring-amber bg-input border-panel-line"
             />
             <span className="ml-2 text-sm text-muted">Onthoud mij</span>
           </label>
@@ -138,11 +168,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           </button>
         </div>
 
-        <button
-          type="submit"
-          disabled={busy || !!formState.emailError || !!formState.passwordError}
-          className={getButtonClasses()}
-        >
+        <button type="submit" disabled={busy} className={getButtonClasses()}>
           {loading ? (
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#14100a] mr-2"></div>
@@ -157,16 +183,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         </button>
       </form>
 
-      <p className="text-center text-sm text-muted">
-        {isSignUp ? "Heb je al een account? " : "Nog geen account? "}
-        <button
-          onClick={onToggleSignUp}
-          className="font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber rounded"
-        >
-          {isSignUp ? "Log in" : "Registreer je"}
-        </button>
-      </p>
-
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-panel-line" />
@@ -176,6 +192,22 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             of ga verder met
           </span>
         </div>
+      </div>
+
+      <GoogleSignInButton
+        onClick={onGoogleSignIn}
+        loading={googleLoading}
+        busy={busy}
+      />
+
+      <div className="text-center text-sm text-muted">
+        {isSignUp ? "Heb je al een account? " : "Nog geen account? "}
+        <button
+          onClick={onToggleSignUp}
+          className="font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber rounded"
+        >
+          {isSignUp ? "Log in" : "Registreer je"}
+        </button>
       </div>
     </div>
   );

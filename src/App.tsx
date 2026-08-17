@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { auth } from "./firebaseConfig";
 import { FirebaseError } from "firebase/app";
 
@@ -22,11 +22,28 @@ import {
   ErrorMessage,
   Header,
   AuthForm,
-  GoogleSignInButton,
   UserProfile,
 } from "./components/index";
 
 type LoadingAction = "email" | "google" | "reset" | "signout" | null;
+
+const TIMEOUT_MS = 30_000;
+const TIMEOUT_MESSAGE = "De verbinding duurt te lang. Probeer het opnieuw.";
+
+const withTimeout = <T,>(promise: Promise<T>, ms: number): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(TIMEOUT_MESSAGE)), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (reason: unknown) => {
+        clearTimeout(timer);
+        reject(reason instanceof Error ? reason : new Error(String(reason)));
+      },
+    );
+  });
 
 const getUserDisplayName = (user: User): string => {
   return user.displayName ?? user.email ?? "Gebruiker";
@@ -68,14 +85,15 @@ const getErrorMessage = (error: unknown): string => {
 };
 
 function App() {
-  // Group related state into objects for better organization
   const [formState, setFormState] = useState({
     email: "",
     password: "",
     emailError: "",
     passwordError: "",
+    emailTouched: false,
+    passwordTouched: false,
     showPassword: false,
-    rememberMe: false,
+    rememberMe: true,
   });
 
   const [authState, setAuthState] = useState({
@@ -86,7 +104,7 @@ function App() {
   });
 
   const [loadingAction, setLoadingAction] = useState<LoadingAction>(null);
-
+  const operationInFlight = useRef(false);
   const [resetMessage, setResetMessage] = useState("");
   const [authInitialized, setAuthInitialized] = useState(false);
 
@@ -110,7 +128,6 @@ function App() {
     return unsubscribe;
   }, []);
 
-  // DRY: Helper functions
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -127,6 +144,8 @@ function App() {
       password: "",
       emailError: "",
       passwordError: "",
+      emailTouched: false,
+      passwordTouched: false,
       showPassword: false,
     }));
   };
@@ -144,47 +163,30 @@ function App() {
     action: Exclude<LoadingAction, null>,
     operation: () => Promise<void>,
   ) => {
+    if (operationInFlight.current) return;
+    operationInFlight.current = true;
     setLoadingAction(action);
+    setResetMessage("");
     setAuthState((prev) => ({ ...prev, error: "" }));
     try {
-      await operation();
+      await withTimeout(operation(), TIMEOUT_MS);
     } catch (error: unknown) {
       console.error(error);
-      const errorMessage = getErrorMessage(error);
-      setAuthState((prev) => ({
-        ...prev,
-        error: errorMessage,
-      }));
+      const errorMessage =
+        error instanceof Error && error.message === TIMEOUT_MESSAGE
+          ? TIMEOUT_MESSAGE
+          : getErrorMessage(error);
+      setAuthState((prev) => ({ ...prev, error: errorMessage }));
     } finally {
       setLoadingAction(null);
+      operationInFlight.current = false;
     }
-  };
-
-  // DRY: Styling constants
-  const getInputClasses = (hasError = false) => `
-    w-full px-4 py-3 rounded-lg border bg-input text-text placeholder-muted-dim text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber caret-amber ${
-      hasError
-        ? "border-danger/60 focus:border-danger focus:ring-danger/30"
-        : "border-panel-line"
-    }
-  `;
-
-  const getLabelClasses = () => `
-    block text-sm font-medium mb-2 text-muted
-  `;
-
-  const getButtonClasses = (variant: "primary" | "secondary" = "primary") => {
-    const baseClasses =
-      "w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60 disabled:cursor-not-allowed";
-    if (variant === "secondary") {
-      return `${baseClasses} bg-panel text-text border border-panel-line hover:bg-panel-line/30`;
-    }
-    return `${baseClasses} bg-linear-to-r from-amber to-amber-dark text-[#14100a] hover:-translate-y-0.5 shadow-lg shadow-amber/20`;
   };
 
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setResetMessage("");
+    setAuthState((prev) => ({ ...prev, error: "" }));
     setFormState((prev) => ({
       ...prev,
       email: value,
@@ -193,8 +195,13 @@ function App() {
     }));
   };
 
+  const handleEmailBlur = () => {
+    setFormState((prev) => ({ ...prev, emailTouched: true }));
+  };
+
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    setAuthState((prev) => ({ ...prev, error: "" }));
     setFormState((prev) => ({
       ...prev,
       password: value,
@@ -205,8 +212,31 @@ function App() {
     }));
   };
 
+  const handlePasswordBlur = () => {
+    setFormState((prev) => ({ ...prev, passwordTouched: true }));
+  };
+
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    const emailError = formState.email
+      ? validateEmail(formState.email)
+        ? ""
+        : "Voer een geldig e-mailadres in"
+      : "Voer je e-mailadres in";
+    const passwordError = formState.password
+      ? validatePassword(formState.password)
+        ? ""
+        : "Wachtwoord moet minstens 6 tekens bevatten"
+      : "Voer je wachtwoord in";
+    setFormState((prev) => ({
+      ...prev,
+      emailTouched: true,
+      passwordTouched: true,
+      emailError,
+      passwordError,
+    }));
+    if (emailError || passwordError) return;
+
     await handleAsyncOperation("email", async () => {
       await applyPersistence();
       if (authState.isSignUp) {
@@ -224,6 +254,7 @@ function App() {
       }
     });
   };
+
   const signIn = async () => {
     await handleAsyncOperation("google", async () => {
       await applyPersistence();
@@ -236,8 +267,7 @@ function App() {
   const signOutUser = async () => {
     await handleAsyncOperation("signout", async () => {
       await signOut(auth);
-      setAuthState((prev) => ({ ...prev, error: "" }));
-      setResetMessage("");
+      setAuthState((prev) => ({ ...prev, error: "", isSignUp: false }));
       clearForm();
     });
   };
@@ -280,7 +310,10 @@ function App() {
         backgroundSize: "42px 42px, 42px 42px, 100% 100%, 100% 100%",
       }}
     >
-      <div className="relative w-full max-w-[960px] overflow-hidden rounded-2xl shadow-2xl border border-panel-line bg-panel grid grid-cols-1 md:grid-cols-2 animate-fade-in-up">
+      <div
+        role="main"
+        className="relative w-full max-w-[960px] overflow-hidden rounded-2xl shadow-2xl border border-panel-line bg-panel grid grid-cols-1 md:grid-cols-2 animate-fade-in-up"
+      >
         <BrandPanel />
 
         <div className="p-6 sm:p-10">
@@ -294,35 +327,38 @@ function App() {
             </div>
           ) : (
             <>
-              <Header isSignUp={authState.isSignUp} />
-
               <ErrorMessage error={authState.error} />
-
-              {resetMessage && (
-                <div
-                  role="status"
-                  aria-live="polite"
-                  className="mb-6 p-4 border rounded-xl bg-teal/10 border-teal/30"
-                >
-                  <div className="flex items-start">
-                    <CheckIcon className="w-5 h-5 mr-3 mt-0.5 shrink-0 text-teal" />
-                    <p className="text-sm font-medium text-teal">
-                      {resetMessage}
-                    </p>
-                  </div>
-                </div>
-              )}
 
               {!authState.name ? (
                 <>
+                  <Header isSignUp={authState.isSignUp} />
+
+                  {resetMessage && (
+                    <div
+                      role="status"
+                      aria-live="polite"
+                      className="mb-6 p-4 border rounded-xl bg-teal/10 border-teal/30"
+                    >
+                      <div className="flex items-start">
+                        <CheckIcon className="w-5 h-5 mr-3 mt-0.5 shrink-0 text-teal" />
+                        <p className="text-sm font-medium text-teal">
+                          {resetMessage}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   <AuthForm
                     formState={formState}
                     isSignUp={authState.isSignUp}
                     loading={loadingAction === "email"}
                     resetLoading={loadingAction === "reset"}
+                    googleLoading={loadingAction === "google"}
                     busy={loadingAction !== null}
                     onEmailChange={handleEmail}
+                    onEmailBlur={handleEmailBlur}
                     onPasswordChange={handlePassword}
+                    onPasswordBlur={handlePasswordBlur}
                     onTogglePassword={() =>
                       setFormState((prev) => ({
                         ...prev,
@@ -339,20 +375,9 @@ function App() {
                       }))
                     }
                     onForgotPassword={() => void handleForgotPassword()}
+                    onGoogleSignIn={() => void signIn()}
                     onSubmit={(e) => void handleEmailAuth(e)}
-                    getInputClasses={getInputClasses}
-                    getLabelClasses={getLabelClasses}
-                    getButtonClasses={getButtonClasses}
                   />
-
-                  <div className="mt-6">
-                    <GoogleSignInButton
-                      onClick={() => void signIn()}
-                      loading={loadingAction === "google"}
-                      busy={loadingAction !== null}
-                      getButtonClasses={getButtonClasses}
-                    />
-                  </div>
                 </>
               ) : (
                 <UserProfile

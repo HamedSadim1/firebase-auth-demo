@@ -13,7 +13,7 @@ export const BrandPanel: React.FC = () => {
   const appTitle = import.meta.env.VITE_APP_TITLE || "Firebase Auth Demo";
 
   return (
-    <div className="relative flex flex-col justify-between p-10 brand-bg border-b border-panel-line md:border-b-0 md:border-r">
+    <div className="relative flex flex-col justify-between p-6 sm:p-10 brand-bg border-b border-panel-line md:border-b-0 md:border-r">
       <div>
         <div className="w-[52px] h-[52px] rounded-xl flex items-center justify-center bg-linear-to-br from-amber to-amber-dark text-[#14100a] animate-pulse-glow">
           <LightningIcon className="w-6 h-6" />
@@ -23,9 +23,9 @@ export const BrandPanel: React.FC = () => {
           {"// auth.demo.v2"}
         </span>
 
-        <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-text">
+        <p className="mt-3 font-display text-3xl font-bold tracking-tight text-text">
           {appTitle}
-        </h2>
+        </p>
         <p className="mt-3 text-muted leading-relaxed">
           Een moderne authenticatie-demo, gebouwd met React, Firebase en
           Tailwind CSS.
@@ -49,7 +49,7 @@ export const BrandPanel: React.FC = () => {
           ))}
         </ul>
 
-        <p className="mt-10 pt-6 border-t border-panel-line font-mono text-xs text-muted-dim">
+        <p className="mt-10 pt-6 border-t border-panel-line font-mono text-xs text-muted-dim hidden sm:block">
           {TAGS.join(" · ")}
         </p>
       </div>

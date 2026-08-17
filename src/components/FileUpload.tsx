@@ -1,8 +1,25 @@
 import React, { useRef, useState } from "react";
+import { FirebaseError } from "firebase/app";
 import { storage } from "../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { UploadIcon } from "../svg/UploadIcon";
 import { UserIcon } from "../svg/UserIcon";
+import { WarningIcon } from "../svg/WarningIcon";
+import { CheckIcon } from "../svg/CheckIcon";
+
+const getStorageErrorMessage = (error: unknown): string => {
+  const code = error instanceof FirebaseError ? error.code : "";
+  switch (code) {
+    case "storage/quota-exceeded":
+      return "Opslaglimiet bereikt. Maak ruimte vrij en probeer opnieuw.";
+    case "storage/unauthorized":
+      return "Je hebt geen rechten om te uploaden.";
+    case "storage/canceled":
+      return "Uploaden geannuleerd.";
+    default:
+      return "Uploaden mislukt. Probeer het opnieuw.";
+  }
+};
 
 interface FileUploadProps {
   onUploadComplete: (url: string) => void;
@@ -19,15 +36,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const [imageError, setImageError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleLabelKeyDown = (e: React.KeyboardEvent<HTMLLabelElement>) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      inputRef.current?.click();
-    }
-  };
-
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
 
     // Validate file type
@@ -62,7 +73,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       onUploadComplete(downloadURL);
     } catch (error) {
       console.error("Upload error:", error);
-      setError("Uploaden mislukt. Probeer het opnieuw.");
+      setError(getStorageErrorMessage(error));
     } finally {
       setUploading(false);
     }
@@ -89,20 +100,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
         {/* Upload Button */}
         <div>
-          <label
-            htmlFor="file-upload"
-            role="button"
-            tabIndex={uploading ? -1 : 0}
-            onKeyDown={handleLabelKeyDown}
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            disabled={uploading}
             className={`inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 bg-panel text-text border-panel-line hover:bg-panel-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${
               uploading ? "opacity-60 cursor-not-allowed" : ""
             }`}
           >
             <UploadIcon className="w-4 h-4 mr-2" />
             {uploading ? "Uploaden..." : "Foto uploaden"}
-          </label>
+          </button>
           <input
-            id="file-upload"
             ref={inputRef}
             type="file"
             accept="image/*"
@@ -116,13 +125,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       {/* Error Message */}
       {error && (
         <div role="alert" className="text-danger text-sm flex items-center">
-          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <WarningIcon className="w-4 h-4 mr-1" />
           {error}
         </div>
       )}
@@ -134,13 +137,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           aria-live="polite"
           className="text-teal text-sm flex items-center"
         >
-          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <CheckIcon className="w-4 h-4 mr-1" />
           Foto succesvol geüpload!
         </div>
       )}
