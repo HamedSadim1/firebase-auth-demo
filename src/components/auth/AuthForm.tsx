@@ -5,17 +5,17 @@ import {
   EyeOpenIcon,
   EyeClosedIcon,
   ArrowRightIcon,
-} from "../../svg/index";
-import { Spinner } from "../ui/Spinner";
-import { GoogleSignInButton } from "./GoogleSignInButton";
+} from "@/svg/index";
+import { Spinner } from "@/components/ui/Spinner";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import {
   focusRingInline,
   getButtonClasses,
   getInputClasses,
   getLabelClasses,
-} from "../../lib/styles";
-import { FormState } from "../../lib/types";
-import { cn } from "../../lib/cn";
+} from "@/lib/styles";
+import { FormState } from "@/lib/types";
+import { cn } from "@/lib/cn";
 
 interface AuthFormProps {
   formState: FormState;

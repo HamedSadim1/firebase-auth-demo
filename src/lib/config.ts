@@ -2,7 +2,7 @@ import {
   APP_TITLE_DEFAULT,
   APP_VERSION_DEFAULT,
   STORAGE_UPLOAD_PATH_DEFAULT,
-} from "./constants";
+} from "@/lib/constants";
 
 export const APP_TITLE = import.meta.env.VITE_APP_TITLE ?? APP_TITLE_DEFAULT;
 

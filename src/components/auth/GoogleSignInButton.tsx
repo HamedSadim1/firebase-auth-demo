@@ -1,8 +1,8 @@
 import React from "react";
-import { GoogleLogo } from "../../svg/index";
-import { Spinner } from "../ui/Spinner";
-import { getButtonClasses } from "../../lib/styles";
-import { cn } from "../../lib/cn";
+import { GoogleLogo } from "@/svg/index";
+import { Spinner } from "@/components/ui/Spinner";
+import { getButtonClasses } from "@/lib/styles";
+import { cn } from "@/lib/cn";
 
 interface GoogleSignInButtonProps {
   onClick: () => void;

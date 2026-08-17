@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { UserIcon, CheckIcon, SignOutIcon } from "../../svg/index";
-import { FileUpload } from "./FileUpload";
-import { Spinner } from "../ui/Spinner";
+import { UserIcon, CheckIcon, SignOutIcon } from "@/svg/index";
+import { FileUpload } from "@/components/profile/FileUpload";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface UserProfileProps {
   name: string;

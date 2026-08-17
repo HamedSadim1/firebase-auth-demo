@@ -11,17 +11,17 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
 } from "firebase/auth";
-import { auth } from "../firebaseConfig";
-import { getAuthErrorMessage } from "../lib/errors";
-import { validateEmail } from "../lib/validation";
-import { getUserDisplayName } from "../lib/user";
-import { AuthState, LoadingAction } from "../lib/types";
-import { withTimeout } from "../lib/async";
+import { auth } from "@/firebaseConfig";
+import { getAuthErrorMessage } from "@/lib/errors";
+import { validateEmail } from "@/lib/validation";
+import { getUserDisplayName } from "@/lib/user";
+import { AuthState, LoadingAction } from "@/lib/types";
+import { withTimeout } from "@/lib/async";
 import {
   RESET_EMAIL_INVALID,
   TIMEOUT_MS,
   TIMEOUT_MESSAGE,
-} from "../lib/constants";
+} from "@/lib/constants";
 
 export interface AuthApi {
   authState: AuthState;

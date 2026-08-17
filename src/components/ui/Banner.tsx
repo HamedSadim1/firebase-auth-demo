@@ -1,6 +1,6 @@
 import React from "react";
-import { WarningIcon, CheckIcon, IconProps } from "../../svg/index";
-import { cn } from "../../lib/cn";
+import { WarningIcon, CheckIcon, IconProps } from "@/svg/index";
+import { cn } from "@/lib/cn";
 
 interface BannerProps {
   tone: "error" | "success";

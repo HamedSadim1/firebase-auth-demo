@@ -1,5 +1,5 @@
 import React from "react";
-import { IconProps, Svg } from "./Icon";
+import { IconProps, Svg } from "@/svg/Icon";
 
 export const EyeClosedIcon: React.FC<IconProps> = ({ className }) => (
   <Svg

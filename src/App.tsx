@@ -1,6 +1,6 @@
 import React from "react";
-import { useAuth } from "./hooks/useAuth";
-import { useAuthForm } from "./hooks/useAuthForm";
+import { useAuth } from "@/hooks/useAuth";
+import { useAuthForm } from "@/hooks/useAuthForm";
 import {
   AuthShell,
   BrandPanel,
@@ -9,7 +9,7 @@ import {
   AuthForm,
   UserProfile,
   LoadingState,
-} from "./components/index";
+} from "@/components/index";
 
 function App() {
   const {

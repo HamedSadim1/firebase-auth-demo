@@ -1,4 +1,4 @@
-import { TIMEOUT_MESSAGE } from "./constants";
+import { TIMEOUT_MESSAGE } from "@/lib/constants";
 
 export const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> =>
   new Promise<T>((resolve, reject) => {

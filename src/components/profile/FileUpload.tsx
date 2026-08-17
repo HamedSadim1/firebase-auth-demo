@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
-import { storage } from "../../firebaseConfig";
+import { storage } from "@/firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getStorageErrorMessage } from "../../lib/errors";
-import { STORAGE_UPLOAD_PATH } from "../../lib/config";
-import { focusRing } from "../../lib/styles";
+import { getStorageErrorMessage } from "@/lib/errors";
+import { STORAGE_UPLOAD_PATH } from "@/lib/config";
+import { focusRing } from "@/lib/styles";
 import {
   FILE_NOT_IMAGE,
   FILE_TOO_LARGE,
@@ -11,9 +11,9 @@ import {
   IMAGE_MIME_PREFIX,
   MAX_FILE_SIZE_BYTES,
   UPLOAD_FILENAME_PREFIX,
-} from "../../lib/constants";
-import { UploadIcon, UserIcon, WarningIcon, CheckIcon } from "../../svg/index";
-import { cn } from "../../lib/cn";
+} from "@/lib/constants";
+import { UploadIcon, UserIcon, WarningIcon, CheckIcon } from "@/svg/index";
+import { cn } from "@/lib/cn";
 
 interface FileUploadProps {
   onUploadComplete: (url: string) => void;

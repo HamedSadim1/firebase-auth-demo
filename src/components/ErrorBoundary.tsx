@@ -1,6 +1,6 @@
 import React from "react";
-import { getButtonClasses } from "../lib/styles";
-import { cn } from "../lib/cn";
+import { getButtonClasses } from "@/lib/styles";
+import { cn } from "@/lib/cn";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;

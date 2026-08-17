@@ -4,7 +4,7 @@ import {
   AUTH_ERROR_MESSAGES,
   STORAGE_ERROR_FALLBACK,
   STORAGE_ERROR_MESSAGES,
-} from "./constants";
+} from "@/lib/constants";
 
 const mapError = (
   error: unknown,

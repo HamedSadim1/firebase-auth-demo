@@ -1,5 +1,5 @@
 import React from "react";
-import { IconProps, Svg } from "./Icon";
+import { IconProps, Svg } from "@/svg/Icon";
 
 export const UserIcon: React.FC<IconProps> = ({ className }) => (
   <Svg className={className} fill="currentColor" viewBox="0 0 24 24">

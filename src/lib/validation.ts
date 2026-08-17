@@ -5,7 +5,7 @@ import {
   MIN_PASSWORD_LENGTH,
   PASSWORD_REQUIRED,
   PASSWORD_TOO_SHORT,
-} from "./constants";
+} from "@/lib/constants";
 
 export const validateEmail = (email: string): boolean => {
   return EMAIL_REGEX.test(email);
