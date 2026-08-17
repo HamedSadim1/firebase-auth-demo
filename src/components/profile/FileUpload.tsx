@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
-import { storage } from "../firebaseConfig";
+import { storage } from "../../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getStorageErrorMessage } from "../lib/errors";
-import { STORAGE_UPLOAD_PATH } from "../lib/config";
-import { focusRing } from "../lib/styles";
+import { getStorageErrorMessage } from "../../lib/errors";
+import { STORAGE_UPLOAD_PATH } from "../../lib/config";
+import { focusRing } from "../../lib/styles";
 import {
   FILE_NOT_IMAGE,
   FILE_TOO_LARGE,
@@ -11,8 +11,9 @@ import {
   IMAGE_MIME_PREFIX,
   MAX_FILE_SIZE_BYTES,
   UPLOAD_FILENAME_PREFIX,
-} from "../lib/constants";
-import { UploadIcon, UserIcon, WarningIcon, CheckIcon } from "../svg/index";
+} from "../../lib/constants";
+import { UploadIcon, UserIcon, WarningIcon, CheckIcon } from "../../svg/index";
+import { cn } from "../../lib/cn";
 
 interface FileUploadProps {
   onUploadComplete: (url: string) => void;
@@ -97,9 +98,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            className={`inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 bg-panel text-text border-panel-line hover:bg-panel-line/30 ${focusRing} ${
-              uploading ? "opacity-60 cursor-not-allowed" : ""
-            }`}
+            className={cn(
+              "inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 bg-panel text-text border-panel-line hover:bg-panel-line/30",
+              focusRing,
+              uploading && "opacity-60 cursor-not-allowed",
+            )}
           >
             <UploadIcon className="w-4 h-4 mr-2" />
             {uploading ? "Uploaden..." : "Foto uploaden"}

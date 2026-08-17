@@ -1,5 +1,6 @@
 import React from "react";
-import { WarningIcon, CheckIcon, IconProps } from "../svg/index";
+import { WarningIcon, CheckIcon, IconProps } from "../../svg/index";
+import { cn } from "../../lib/cn";
 
 interface BannerProps {
   tone: "error" | "success";
@@ -39,11 +40,11 @@ export const Banner: React.FC<BannerProps> = ({ tone, message }) => {
     <div
       role={role}
       aria-live={ariaLive}
-      className={`mb-6 p-4 border rounded-xl ${container}`}
+      className={cn("mb-6 p-4 border rounded-xl", container)}
     >
       <div className="flex items-start">
-        <Icon className={`w-5 h-5 mr-3 mt-0.5 shrink-0 ${accent}`} />
-        <p className={`text-sm font-medium ${accent}`}>{message}</p>
+        <Icon className={cn("w-5 h-5 mr-3 mt-0.5 shrink-0", accent)} />
+        <p className={cn("text-sm font-medium", accent)}>{message}</p>
       </div>
     </div>
   );

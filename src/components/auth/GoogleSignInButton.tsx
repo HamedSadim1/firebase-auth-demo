@@ -1,7 +1,8 @@
 import React from "react";
-import { GoogleLogo } from "../svg/index";
-import { Spinner } from "./index";
-import { getButtonClasses } from "../lib/styles";
+import { GoogleLogo } from "../../svg/index";
+import { Spinner } from "../ui/Spinner";
+import { getButtonClasses } from "../../lib/styles";
+import { cn } from "../../lib/cn";
 
 interface GoogleSignInButtonProps {
   onClick: () => void;
@@ -20,9 +21,10 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
       disabled={busy}
       aria-label="Doorgaan met Google"
       aria-busy={loading}
-      className={`${getButtonClasses(
-        "secondary",
-      )} flex items-center justify-center gap-3`}
+      className={cn(
+        getButtonClasses("secondary"),
+        "flex items-center justify-center gap-3",
+      )}
     >
       {loading ? (
         <Spinner className="border-current" />

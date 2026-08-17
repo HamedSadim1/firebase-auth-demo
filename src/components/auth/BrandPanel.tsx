@@ -1,6 +1,6 @@
 import React from "react";
-import { LightningIcon, CheckIcon } from "../svg/index";
-import { APP_TITLE, APP_VERSION } from "../lib/config";
+import { LightningIcon, CheckIcon } from "../../svg/index";
+import { APP_TITLE, APP_VERSION } from "../../lib/config";
 
 const FEATURES = [
   { label: "Inloggen met Google of e-mail", tag: "oauth" },

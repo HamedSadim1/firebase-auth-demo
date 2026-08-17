@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "../../lib/cn";
 
 interface SpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -17,6 +18,10 @@ export const Spinner: React.FC<SpinnerProps> = ({
 }) => (
   <div
     aria-hidden="true"
-    className={`animate-spin rounded-full border-b-2 ${SIZE_CLASSES[size]} ${className}`}
+    className={cn(
+      "animate-spin rounded-full border-b-2",
+      SIZE_CLASSES[size],
+      className,
+    )}
   />
 );

@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "clsx": "^2.1.1",
     "firebase": "^12.17.1",
     "firebase-tools": "^15.27.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {

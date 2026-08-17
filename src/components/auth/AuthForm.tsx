@@ -5,16 +5,17 @@ import {
   EyeOpenIcon,
   EyeClosedIcon,
   ArrowRightIcon,
-} from "../svg/index";
-import { Spinner } from "./index";
+} from "../../svg/index";
+import { Spinner } from "../ui/Spinner";
 import { GoogleSignInButton } from "./GoogleSignInButton";
 import {
   focusRingInline,
   getButtonClasses,
   getInputClasses,
   getLabelClasses,
-} from "../lib/styles";
-import { FormState } from "../lib/types";
+} from "../../lib/styles";
+import { FormState } from "../../lib/types";
+import { cn } from "../../lib/cn";
 
 interface AuthFormProps {
   formState: FormState;
@@ -108,7 +109,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               aria-describedby={
                 showPasswordError ? "password-error" : undefined
               }
-              className={`${getInputClasses(showPasswordError)} pr-12`}
+              className={cn(getInputClasses(showPasswordError), "pr-12")}
               placeholder="Voer je wachtwoord in"
             />
             <button
@@ -119,7 +120,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                   ? "Verberg wachtwoord"
                   : "Toon wachtwoord"
               }
-              className={`absolute right-3 top-3.5 rounded transition-all duration-200 text-muted-dim hover:text-muted hover:scale-110 active:scale-95 ${focusRingInline}`}
+              className={cn(
+                "absolute right-3 top-3.5 rounded transition-all duration-200 text-muted-dim hover:text-muted hover:scale-110 active:scale-95",
+                focusRingInline,
+              )}
             >
               {formState.showPassword ? (
                 <EyeClosedIcon className="w-5 h-5" />
@@ -158,7 +162,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             type="button"
             onClick={onForgotPassword}
             disabled={busy}
-            className={`text-sm font-medium text-amber hover:text-amber/80 transition-colors duration-200 hover:underline underline-offset-4 ${focusRingInline} rounded disabled:opacity-60 disabled:cursor-not-allowed`}
+            className={cn(
+              "text-sm font-medium text-amber hover:text-amber/80 transition-colors duration-200 hover:underline underline-offset-4",
+              focusRingInline,
+              "rounded disabled:opacity-60 disabled:cursor-not-allowed",
+            )}
           >
             {resetLoading ? "Versturen..." : "Wachtwoord vergeten?"}
           </button>
@@ -200,7 +208,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         {isSignUp ? "Heb je al een account? " : "Nog geen account? "}
         <button
           onClick={onToggleSignUp}
-          className={`font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200 ${focusRingInline} rounded`}
+          className={cn(
+            "font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200",
+            focusRingInline,
+            "rounded",
+          )}
         >
           {isSignUp ? "Log in" : "Registreer je"}
         </button>
