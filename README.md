@@ -153,4 +153,3 @@ src/
 ```
 
 > Imports use the `@/` path alias, which points to `src/` (configured in `tsconfig.json` and `vite.config.mjs`).
-
