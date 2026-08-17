@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { auth } from "./firebaseConfig";
 
 import {
@@ -39,17 +39,6 @@ function App() {
     isSignUp: false,
   });
 
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    const stored = localStorage.getItem("theme");
-    if (stored) return stored === "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", isDarkMode);
-    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
-  }, [isDarkMode]);
-
   // DRY: Helper functions
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -87,24 +76,24 @@ function App() {
 
   // DRY: Styling constants
   const getInputClasses = (hasError = false) => `
-    w-full px-4 py-3 rounded-xl border text-sm shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 bg-white border-slate-300 text-slate-900 placeholder-slate-400 dark:bg-slate-800/60 dark:border-slate-600 dark:text-white dark:placeholder-slate-500 dark:focus:bg-slate-800 ${
+    w-full px-4 py-3 rounded-lg border bg-input text-text placeholder-muted-dim text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber/30 focus:border-amber caret-amber ${
       hasError
-        ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/30 dark:border-rose-500"
-        : "focus:border-indigo-500 focus:ring-indigo-500/30 dark:focus:border-indigo-400 dark:focus:ring-indigo-400/30"
+        ? "border-danger/60 focus:border-danger focus:ring-danger/30"
+        : "border-panel-line"
     }
   `;
 
   const getLabelClasses = () => `
-    block text-sm font-medium mb-2 transition-colors duration-200 text-slate-700 dark:text-slate-200
+    block text-sm font-medium mb-2 text-muted
   `;
 
   const getButtonClasses = (variant: "primary" | "secondary" = "primary") => {
     const baseClasses =
-      "w-full py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]";
+      "w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:opacity-60 disabled:cursor-not-allowed";
     if (variant === "secondary") {
-      return `${baseClasses} bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 focus-visible:ring-indigo-500 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700 dark:hover:border-slate-500 dark:focus-visible:ring-indigo-400`;
+      return `${baseClasses} bg-panel text-text border border-panel-line hover:bg-panel-line/30`;
     }
-    return `${baseClasses} bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:ring-indigo-500 shadow-lg shadow-indigo-600/25 dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus-visible:ring-indigo-400 dark:shadow-indigo-500/20`;
+    return `${baseClasses} bg-linear-to-r from-amber to-amber-dark text-[#14100a] hover:-translate-y-0.5 shadow-lg shadow-amber/20`;
   };
 
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,9 +102,7 @@ function App() {
       ...prev,
       email: value,
       emailError:
-        value && !validateEmail(value)
-          ? "Please enter a valid email address"
-          : "",
+        value && !validateEmail(value) ? "Voer een geldig e-mailadres in" : "",
     }));
   };
 
@@ -126,7 +113,7 @@ function App() {
       password: value,
       passwordError:
         value && !validatePassword(value)
-          ? "Password must be at least 6 characters"
+          ? "Wachtwoord moet minstens 6 tekens bevatten"
           : "",
     }));
   };
@@ -193,17 +180,21 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-500 bg-linear-to-br from-slate-50 via-indigo-50/70 to-violet-100 dark:from-slate-950 dark:via-indigo-950 dark:to-violet-950 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-indigo-400 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-violet-400 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-fuchsia-400 rounded-full blur-3xl"></div>
-      </div>
+    <div
+      className="min-h-screen bg-bg flex items-center justify-center p-4 relative"
+      style={{
+        backgroundImage: `
+          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+          radial-gradient(circle at 15% 10%, rgba(245,166,35,0.07), transparent 40%),
+          radial-gradient(circle at 85% 90%, rgba(42,217,197,0.05), transparent 45%)
+        `,
+        backgroundSize: "42px 42px, 42px 42px, 100% 100%, 100% 100%",
+      }}
+    >
+      <DarkModeToggle />
 
-      <DarkModeToggle onToggle={() => setIsDarkMode((prev) => !prev)} />
-
-      <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl shadow-2xl border grid lg:grid-cols-2 transition-colors duration-300 bg-white/90 border-slate-200/50 shadow-slate-300/40 dark:bg-slate-900/90 dark:border-slate-700/50 dark:shadow-slate-950/50">
+      <div className="relative w-full max-w-[960px] overflow-hidden rounded-2xl shadow-2xl border border-panel-line bg-panel grid grid-cols-1 md:grid-cols-2 animate-fade-in-up">
         <BrandPanel />
 
         <div className="p-6 sm:p-10">

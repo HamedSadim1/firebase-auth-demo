@@ -1,41 +1,58 @@
 import React from "react";
-import { FirebaseLogo, CheckIcon } from "./index";
+import { LightningIcon, CheckIcon } from "./index";
 
 const FEATURES = [
-  "Sign in with Google or email",
-  "Upload a profile photo",
-  "Light & dark mode support",
+  { label: "Inloggen met Google of e-mail", tag: "oauth" },
+  { label: "Profielfoto uploaden", tag: "storage" },
+  { label: "Licht- en donkere modus", tag: "theme" },
 ];
+
+const TAGS = ["React", "Firebase", "Tailwind CSS"];
 
 export const BrandPanel: React.FC = () => {
   const appTitle = import.meta.env.VITE_APP_TITLE || "Firebase Auth Demo";
 
   return (
-    <div className="hidden lg:flex flex-col justify-between p-10 relative overflow-hidden bg-linear-to-br from-indigo-600 via-indigo-600 to-violet-700 text-white">
-      <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/10 blur-2xl"></div>
-      <div className="absolute -bottom-24 -left-12 w-64 h-64 rounded-full bg-violet-400/20 blur-3xl"></div>
-
-      <div className="relative">
-        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 bg-linear-to-br from-orange-500 to-red-600 shadow-orange-500/30 text-white">
-          <FirebaseLogo className="w-8 h-8" />
+    <div className="relative flex flex-col justify-between p-10 brand-bg border-b border-panel-line md:border-b-0 md:border-r">
+      <div>
+        <div className="w-[52px] h-[52px] rounded-xl flex items-center justify-center bg-linear-to-br from-amber to-amber-dark text-[#14100a] animate-pulse-glow">
+          <LightningIcon className="w-6 h-6" />
         </div>
-        <h2 className="text-3xl font-bold">{appTitle}</h2>
-        <p className="mt-3 text-indigo-100/90 leading-relaxed">
-          A modern authentication demo built with React, Firebase and Tailwind
-          CSS.
+
+        <span className="block mt-8 font-mono text-xs tracking-[0.2em] text-amber">
+          {"// auth.demo.v2"}
+        </span>
+
+        <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-text">
+          {appTitle}
+        </h2>
+        <p className="mt-3 text-muted leading-relaxed">
+          Een moderne authenticatie-demo, gebouwd met React, Firebase en
+          Tailwind CSS.
         </p>
       </div>
 
-      <ul className="relative space-y-4">
-        {FEATURES.map((feature) => (
-          <li key={feature} className="flex items-center gap-3 text-indigo-100">
-            <span className="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-              <CheckIcon className="w-3.5 h-3.5" />
-            </span>
-            <span className="text-sm font-medium">{feature}</span>
-          </li>
-        ))}
-      </ul>
+      <div>
+        <ul className="space-y-4">
+          {FEATURES.map((feature) => (
+            <li key={feature.tag} className="flex items-center justify-between">
+              <span className="flex items-center gap-3 text-sm text-text">
+                <span className="w-6 h-6 rounded-md bg-amber/15 text-amber flex items-center justify-center shrink-0">
+                  <CheckIcon className="w-3.5 h-3.5" />
+                </span>
+                {feature.label}
+              </span>
+              <span className="font-mono text-xs text-muted-dim">
+                {feature.tag}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-10 pt-6 border-t border-panel-line font-mono text-xs text-muted-dim">
+          {TAGS.join(" · ")}
+        </p>
+      </div>
     </div>
   );
 };

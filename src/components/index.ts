@@ -20,3 +20,5 @@ export { SignInIcon } from "../svg/SignInIcon";
 export { SignOutIcon } from "../svg/SignOutIcon";
 export { UserIcon } from "../svg/UserIcon";
 export { UploadIcon } from "../svg/UploadIcon";
+export { LightningIcon } from "../svg/LightningIcon";
+export { ArrowRightIcon } from "../svg/ArrowRightIcon";

@@ -25,7 +25,7 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
       ) : (
         <>
           <GoogleLogo />
-          <span>Continue with Google</span>
+          <span>Doorgaan met Google</span>
         </>
       )}
     </button>

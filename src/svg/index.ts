@@ -10,3 +10,5 @@ export { SignInIcon } from "./SignInIcon";
 export { SignOutIcon } from "./SignOutIcon";
 export { UserIcon } from "./UserIcon";
 export { UploadIcon } from "./UploadIcon";
+export { LightningIcon } from "./LightningIcon";
+export { ArrowRightIcon } from "./ArrowRightIcon";

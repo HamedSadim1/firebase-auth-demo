@@ -22,13 +22,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      setError("Please select an image file");
+      setError("Selecteer een afbeeldingsbestand");
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setError("File size must be less than 5MB");
+      setError("Bestand moet kleiner zijn dan 5MB");
       return;
     }
 
@@ -51,7 +51,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       onUploadComplete(downloadURL);
     } catch (error) {
       console.error("Upload error:", error);
-      setError("Failed to upload image. Please try again.");
+      setError("Uploaden mislukt. Probeer het opnieuw.");
     } finally {
       setUploading(false);
     }
@@ -62,7 +62,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div className="flex items-center gap-4">
         {/* Current/Preview Image */}
         <div className="relative">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-600">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-panel-line">
             <img
               src={previewUrl ?? currentPhotoUrl ?? ""}
               alt="Profile"
@@ -79,12 +79,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         <div>
           <label
             htmlFor="file-upload"
-            className={`inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 shadow-sm bg-white text-slate-700 border-slate-300 hover:bg-slate-50 hover:border-slate-400 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-600 dark:hover:bg-slate-700 dark:hover:border-slate-500 ${
+            className={`inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 bg-panel text-text border-panel-line hover:bg-panel-line/30 ${
               uploading ? "opacity-60 cursor-not-allowed" : ""
             }`}
           >
             <UploadIcon className="w-4 h-4 mr-2" />
-            {uploading ? "Uploading..." : "Upload Photo"}
+            {uploading ? "Uploaden..." : "Foto uploaden"}
           </label>
           <input
             id="file-upload"
@@ -99,7 +99,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* Error Message */}
       {error && (
-        <div className="text-rose-600 text-sm flex items-center">
+        <div className="text-danger text-sm flex items-center">
           <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
@@ -113,7 +113,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* Success Message */}
       {previewUrl && !uploading && (
-        <div className="text-emerald-600 text-sm flex items-center">
+        <div className="text-teal text-sm flex items-center">
           <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
@@ -121,7 +121,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               clipRule="evenodd"
             />
           </svg>
-          Photo uploaded successfully!
+          Foto succesvol geüpload!
         </div>
       )}
     </div>

@@ -4,7 +4,7 @@ import {
   WarningIcon,
   EyeOpenIcon,
   EyeClosedIcon,
-  SignInIcon,
+  ArrowRightIcon,
 } from "./index";
 
 interface FormState {
@@ -53,7 +53,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       <form onSubmit={onSubmit} className="space-y-5">
         <div>
           <label htmlFor="email" className={getLabelClasses()}>
-            Email Address
+            E-mailadres
           </label>
           <div className="relative">
             <input
@@ -63,16 +63,16 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               onChange={onEmailChange}
               required
               className={getInputClasses(!!formState.emailError)}
-              placeholder="Enter your email"
+              placeholder="jij@voorbeeld.com"
             />
             <div className="absolute right-3 top-3.5">
               {formState.email && !formState.emailError && (
-                <CheckIcon className="w-5 h-5 text-emerald-500" />
+                <CheckIcon className="w-5 h-5 text-teal" />
               )}
             </div>
           </div>
           {formState.emailError && (
-            <p className="mt-1 text-sm text-rose-600 flex items-center">
+            <p className="mt-1 text-sm text-danger flex items-center">
               <WarningIcon className="w-4 h-4 mr-1" />
               {formState.emailError}
             </p>
@@ -81,7 +81,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
         <div>
           <label htmlFor="password" className={getLabelClasses()}>
-            Password
+            Wachtwoord
           </label>
           <div className="relative">
             <input
@@ -92,39 +92,45 @@ export const AuthForm: React.FC<AuthFormProps> = ({
               required
               minLength={6}
               className={`${getInputClasses(!!formState.passwordError)} pr-12`}
-              placeholder="Enter your password"
+              placeholder="Voer je wachtwoord in"
             />
             <button
               type="button"
               onClick={onTogglePassword}
-              className="absolute right-3 top-3.5 transition-colors duration-200 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200"
+              className="absolute right-3 top-3.5 transition-all duration-200 text-muted-dim hover:text-muted hover:scale-110 active:scale-95"
             >
               {formState.showPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
             </button>
           </div>
           {formState.passwordError && (
-            <p className="mt-1 text-sm text-rose-600 flex items-center">
+            <p className="mt-1 text-sm text-danger flex items-center">
               <WarningIcon className="w-4 h-4 mr-1" />
               {formState.passwordError}
             </p>
           )}
         </div>
 
-        <div className="flex items-center">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            checked={formState.rememberMe}
-            onChange={(e) => onRememberMeChange(e.target.checked)}
-            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:bg-slate-800 dark:border-slate-600"
-          />
+        <div className="flex items-center justify-between">
           <label
             htmlFor="remember-me"
-            className="ml-2 block text-sm transition-colors duration-200 text-slate-600 dark:text-slate-300"
+            className="flex items-center cursor-pointer"
           >
-            Remember me
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              checked={formState.rememberMe}
+              onChange={(e) => onRememberMeChange(e.target.checked)}
+              className="h-4 w-4 rounded accent-amber focus:ring-amber bg-input border-panel-line"
+            />
+            <span className="ml-2 text-sm text-muted">Onthoud mij</span>
           </label>
+          <button
+            type="button"
+            className="text-sm font-medium text-amber hover:text-amber/80 transition-colors duration-200 hover:underline underline-offset-4"
+          >
+            Wachtwoord vergeten?
+          </button>
         </div>
 
         <button
@@ -138,36 +144,35 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         >
           {authState.loading ? (
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-              Processing...
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#14100a] mr-2"></div>
+              Bezig...
             </div>
           ) : (
-            <span className="flex items-center justify-center">
-              <SignInIcon className="w-5 h-5 mr-2" />
-              {authState.isSignUp ? "Create Account" : "Sign In"}
+            <span className="flex items-center justify-center gap-2">
+              <ArrowRightIcon className="w-5 h-5" />
+              {authState.isSignUp ? "Registreren" : "Inloggen"}
             </span>
           )}
         </button>
       </form>
 
-      <div className="text-center">
+      <p className="text-center text-sm text-muted">
+        {authState.isSignUp ? "Heb je al een account? " : "Nog geen account? "}
         <button
           onClick={onToggleSignUp}
-          className="text-sm font-medium transition-colors duration-200 text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+          className="font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200"
         >
-          {authState.isSignUp
-            ? "Already have an account? Sign In"
-            : "Don't have an account? Sign Up"}
+          {authState.isSignUp ? "Log in" : "Registreer je"}
         </button>
-      </div>
+      </p>
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200 dark:border-slate-700" />
+          <div className="w-full border-t border-panel-line" />
         </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-            Or continue with
+        <div className="relative flex justify-center">
+          <span className="px-4 bg-panel font-mono text-xs text-muted-dim">
+            of ga verder met
           </span>
         </div>
       </div>

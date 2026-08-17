@@ -20,7 +20,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
     <div className="text-center">
       <div className="mb-8">
         <div className="relative mb-6">
-          <div className="w-24 h-24 rounded-full mx-auto flex items-center justify-center transition-all duration-500 bg-linear-to-r from-emerald-500 to-teal-600 shadow-emerald-500/30 shadow-2xl">
+          <div className="w-24 h-24 rounded-full mx-auto flex items-center justify-center transition-all duration-500 bg-linear-to-r from-amber to-amber-dark shadow-amber/25 shadow-2xl">
             {photoUrl ? (
               <img
                 src={photoUrl}
@@ -31,26 +31,20 @@ export const UserProfile: React.FC<UserProfileProps> = ({
               <UserIcon />
             )}
           </div>
-          <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center bg-emerald-500">
-            <CheckIcon className="w-4 h-4 text-white" />
-          </div>
         </div>
-        <h2 className="text-2xl font-bold mb-2 transition-colors duration-300 text-slate-800 dark:text-white">
-          Welcome back!
+        <h2 className="font-display text-2xl font-bold tracking-tight mb-2 text-text">
+          Welkom terug!
         </h2>
-        <p className="text-lg mb-6 transition-colors duration-300 text-slate-600 dark:text-slate-300">
-          {name}
-        </p>
-        <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
-          ✓ Successfully signed in
+        <p className="text-lg mb-6 text-muted">{name}</p>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-teal/15 text-teal border border-teal/30">
+          <CheckIcon className="w-3.5 h-3.5" />
+          Succesvol ingelogd
         </div>
       </div>
 
       {/* File Upload Section */}
       <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-4 transition-colors duration-300 text-slate-800 dark:text-white">
-          Profile Picture
-        </h3>
+        <h3 className="text-lg font-semibold mb-4 text-text">Profielfoto</h3>
         <FileUpload
           onUploadComplete={onPhotoUpload}
           currentPhotoUrl={photoUrl}
@@ -60,17 +54,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({
       <button
         onClick={onSignOut}
         disabled={loading}
-        className="w-full bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 shadow-lg shadow-rose-600/25 hover:shadow-rose-500/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 active:scale-[0.98]"
+        className="w-full flex items-center justify-center gap-2 rounded-lg border border-panel-line bg-transparent px-4 py-3 text-sm font-medium text-muted hover:border-danger/40 hover:text-danger hover:bg-danger/5 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
       >
         {loading ? (
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-            Signing out...
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-2"></div>
+            Bezig met afmelden...
           </div>
         ) : (
           <span className="flex items-center justify-center">
             <SignOutIcon className="w-5 h-5 mr-2" />
-            Sign Out
+            Afmelden
           </span>
         )}
       </button>
