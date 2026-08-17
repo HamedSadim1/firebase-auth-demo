@@ -59,9 +59,10 @@ A modern React application demonstrating Firebase authentication with both Googl
    VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
    VITE_FIREBASE_APP_ID=your_app_id
 
-   # App configuration
+   # App configuration (optional — defaults shown)
    VITE_APP_TITLE=Firebase Auth Demo
-   VITE_APP_VERSION=1.0.0
+   VITE_APP_VERSION=auth.demo.v2
+   VITE_STORAGE_UPLOAD_PATH=profile-images
    ```
 
 4. **Firebase Setup**

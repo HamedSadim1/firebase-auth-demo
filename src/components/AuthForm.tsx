@@ -5,24 +5,16 @@ import {
   EyeOpenIcon,
   EyeClosedIcon,
   ArrowRightIcon,
-} from "./index";
+} from "../svg/index";
+import { Spinner } from "./index";
 import { GoogleSignInButton } from "./GoogleSignInButton";
 import {
+  focusRingInline,
   getButtonClasses,
   getInputClasses,
   getLabelClasses,
 } from "../lib/styles";
-
-interface FormState {
-  email: string;
-  password: string;
-  emailError: string;
-  passwordError: string;
-  emailTouched: boolean;
-  passwordTouched: boolean;
-  showPassword: boolean;
-  rememberMe: boolean;
-}
+import { FormState } from "../lib/types";
 
 interface AuthFormProps {
   formState: FormState;
@@ -127,9 +119,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                   ? "Verberg wachtwoord"
                   : "Toon wachtwoord"
               }
-              className="absolute right-3 top-3.5 rounded transition-all duration-200 text-muted-dim hover:text-muted hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber"
+              className={`absolute right-3 top-3.5 rounded transition-all duration-200 text-muted-dim hover:text-muted hover:scale-110 active:scale-95 ${focusRingInline}`}
             >
-              {formState.showPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
+              {formState.showPassword ? (
+                <EyeClosedIcon className="w-5 h-5" />
+              ) : (
+                <EyeOpenIcon className="w-5 h-5" />
+              )}
             </button>
           </div>
           {showPasswordError && (
@@ -162,7 +158,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             type="button"
             onClick={onForgotPassword}
             disabled={busy}
-            className="text-sm font-medium text-amber hover:text-amber/80 transition-colors duration-200 hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber rounded disabled:opacity-60 disabled:cursor-not-allowed"
+            className={`text-sm font-medium text-amber hover:text-amber/80 transition-colors duration-200 hover:underline underline-offset-4 ${focusRingInline} rounded disabled:opacity-60 disabled:cursor-not-allowed`}
           >
             {resetLoading ? "Versturen..." : "Wachtwoord vergeten?"}
           </button>
@@ -171,7 +167,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         <button type="submit" disabled={busy} className={getButtonClasses()}>
           {loading ? (
             <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#14100a] mr-2"></div>
+              <Spinner className="border-on-amber mr-2" />
               Bezig...
             </div>
           ) : (
@@ -204,7 +200,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         {isSignUp ? "Heb je al een account? " : "Nog geen account? "}
         <button
           onClick={onToggleSignUp}
-          className="font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber rounded"
+          className={`font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200 ${focusRingInline} rounded`}
         >
           {isSignUp ? "Log in" : "Registreer je"}
         </button>

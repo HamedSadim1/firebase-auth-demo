@@ -1,13 +1,8 @@
 import React from "react";
+import { IconProps, Svg } from "./Icon";
 
-interface ArrowRightIconProps {
-  className?: string;
-}
-
-export const ArrowRightIcon: React.FC<ArrowRightIconProps> = ({
-  className = "w-5 h-5",
-}) => (
-  <svg
+export const ArrowRightIcon: React.FC<IconProps> = ({ className }) => (
+  <Svg
     className={className}
     fill="none"
     stroke="currentColor"
@@ -19,5 +14,5 @@ export const ArrowRightIcon: React.FC<ArrowRightIconProps> = ({
       strokeWidth={2}
       d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"
     />
-  </svg>
+  </Svg>
 );

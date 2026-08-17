@@ -1,25 +1,15 @@
 import React, { useRef, useState } from "react";
-import { FirebaseError } from "firebase/app";
 import { storage } from "../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { UploadIcon } from "../svg/UploadIcon";
-import { UserIcon } from "../svg/UserIcon";
-import { WarningIcon } from "../svg/WarningIcon";
-import { CheckIcon } from "../svg/CheckIcon";
-
-const getStorageErrorMessage = (error: unknown): string => {
-  const code = error instanceof FirebaseError ? error.code : "";
-  switch (code) {
-    case "storage/quota-exceeded":
-      return "Opslaglimiet bereikt. Maak ruimte vrij en probeer opnieuw.";
-    case "storage/unauthorized":
-      return "Je hebt geen rechten om te uploaden.";
-    case "storage/canceled":
-      return "Uploaden geannuleerd.";
-    default:
-      return "Uploaden mislukt. Probeer het opnieuw.";
-  }
-};
+import { getStorageErrorMessage } from "../lib/errors";
+import { STORAGE_UPLOAD_PATH } from "../lib/config";
+import { focusRing } from "../lib/styles";
+import {
+  FILE_NOT_IMAGE,
+  FILE_TOO_LARGE,
+  MAX_FILE_SIZE_BYTES,
+} from "../lib/validation";
+import { UploadIcon, UserIcon, WarningIcon, CheckIcon } from "../svg/index";
 
 interface FileUploadProps {
   onUploadComplete: (url: string) => void;
@@ -43,13 +33,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      setError("Selecteer een afbeeldingsbestand");
+      setError(FILE_NOT_IMAGE);
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Bestand moet kleiner zijn dan 5MB");
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setError(FILE_TOO_LARGE);
       return;
     }
 
@@ -60,7 +50,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       // Create a unique filename
       const timestamp = Date.now();
       const filename = `profile-${timestamp}-${file.name}`;
-      const storageRef = ref(storage, `profile-images/${filename}`);
+      const storageRef = ref(storage, `${STORAGE_UPLOAD_PATH}/${filename}`);
 
       // Upload file
       const snapshot = await uploadBytes(storageRef, file);
@@ -104,7 +94,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
             type="button"
             onClick={() => inputRef.current?.click()}
             disabled={uploading}
-            className={`inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 bg-panel text-text border-panel-line hover:bg-panel-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${
+            className={`inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 bg-panel text-text border-panel-line hover:bg-panel-line/30 ${focusRing} ${
               uploading ? "opacity-60 cursor-not-allowed" : ""
             }`}
           >

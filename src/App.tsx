@@ -1,6 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { auth } from "./firebaseConfig";
-import { FirebaseError } from "firebase/app";
+import { getAuthErrorMessage } from "./lib/errors";
+import {
+  EMAIL_INVALID,
+  PASSWORD_TOO_SHORT,
+  RESET_EMAIL_INVALID,
+  getEmailError,
+  getPasswordError,
+  validateEmail,
+  validatePassword,
+} from "./lib/validation";
 
 import {
   GoogleAuthProvider,
@@ -18,14 +27,13 @@ import {
 
 import {
   BrandPanel,
-  CheckIcon,
-  ErrorMessage,
+  Banner,
   Header,
   AuthForm,
   UserProfile,
+  Spinner,
 } from "./components/index";
-
-type LoadingAction = "email" | "google" | "reset" | "signout" | null;
+import { AuthState, FormState, LoadingAction } from "./lib/types";
 
 const TIMEOUT_MS = 30_000;
 const TIMEOUT_MESSAGE = "De verbinding duurt te lang. Probeer het opnieuw.";
@@ -49,43 +57,8 @@ const getUserDisplayName = (user: User): string => {
   return user.displayName ?? user.email ?? "Gebruiker";
 };
 
-const getErrorMessage = (error: unknown): string => {
-  const code = error instanceof FirebaseError ? error.code : "";
-  switch (code) {
-    case "auth/invalid-credential":
-      return "Ongeldige inloggegevens. Controleer je e-mailadres en wachtwoord.";
-    case "auth/invalid-email":
-      return "Ongeldig e-mailadres.";
-    case "auth/user-not-found":
-      return "Geen account gevonden met dit e-mailadres.";
-    case "auth/wrong-password":
-      return "Onjuist wachtwoord.";
-    case "auth/email-already-in-use":
-      return "Er bestaat al een account met dit e-mailadres.";
-    case "auth/weak-password":
-      return "Wachtwoord is te zwak. Gebruik minstens 6 tekens.";
-    case "auth/user-disabled":
-      return "Dit account is uitgeschakeld.";
-    case "auth/too-many-requests":
-      return "Te veel pogingen. Probeer het later opnieuw.";
-    case "auth/network-request-failed":
-      return "Geen netwerkverbinding. Controleer je verbinding en probeer opnieuw.";
-    case "auth/popup-closed-by-user":
-    case "auth/cancelled-popup-request":
-      return "Aanmelden geannuleerd.";
-    case "auth/operation-not-allowed":
-      return "Deze aanmeldmethode is niet ingeschakeld.";
-    case "auth/requires-recent-login":
-      return "Log opnieuw in om deze actie uit te voeren.";
-    case "auth/account-exists-with-different-credential":
-      return "Er bestaat al een account met een andere aanmeldmethode.";
-    default:
-      return "Er is iets misgegaan. Probeer het opnieuw.";
-  }
-};
-
 function App() {
-  const [formState, setFormState] = useState({
+  const [formState, setFormState] = useState<FormState>({
     email: "",
     password: "",
     emailError: "",
@@ -96,7 +69,7 @@ function App() {
     rememberMe: true,
   });
 
-  const [authState, setAuthState] = useState({
+  const [authState, setAuthState] = useState<AuthState>({
     name: "",
     photoUrl: "",
     error: "",
@@ -127,15 +100,6 @@ function App() {
     });
     return unsubscribe;
   }, []);
-
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password: string): boolean => {
-    return password.length >= 6;
-  };
 
   const clearForm = () => {
     setFormState((prev) => ({
@@ -175,7 +139,7 @@ function App() {
       const errorMessage =
         error instanceof Error && error.message === TIMEOUT_MESSAGE
           ? TIMEOUT_MESSAGE
-          : getErrorMessage(error);
+          : getAuthErrorMessage(error);
       setAuthState((prev) => ({ ...prev, error: errorMessage }));
     } finally {
       setLoadingAction(null);
@@ -190,8 +154,7 @@ function App() {
     setFormState((prev) => ({
       ...prev,
       email: value,
-      emailError:
-        value && !validateEmail(value) ? "Voer een geldig e-mailadres in" : "",
+      emailError: value && !validateEmail(value) ? EMAIL_INVALID : "",
     }));
   };
 
@@ -206,9 +169,7 @@ function App() {
       ...prev,
       password: value,
       passwordError:
-        value && !validatePassword(value)
-          ? "Wachtwoord moet minstens 6 tekens bevatten"
-          : "",
+        value && !validatePassword(value) ? PASSWORD_TOO_SHORT : "",
     }));
   };
 
@@ -218,16 +179,8 @@ function App() {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    const emailError = formState.email
-      ? validateEmail(formState.email)
-        ? ""
-        : "Voer een geldig e-mailadres in"
-      : "Voer je e-mailadres in";
-    const passwordError = formState.password
-      ? validatePassword(formState.password)
-        ? ""
-        : "Wachtwoord moet minstens 6 tekens bevatten"
-      : "Voer je wachtwoord in";
+    const emailError = getEmailError(formState.email);
+    const passwordError = getPasswordError(formState.password);
     setFormState((prev) => ({
       ...prev,
       emailTouched: true,
@@ -278,7 +231,7 @@ function App() {
     if (!validateEmail(email)) {
       setAuthState((prev) => ({
         ...prev,
-        error: "Voer eerst een geldig e-mailadres in",
+        error: RESET_EMAIL_INVALID,
       }));
       return;
     }
@@ -322,31 +275,18 @@ function App() {
               role="status"
               className="flex min-h-[360px] flex-col items-center justify-center gap-3 text-muted"
             >
-              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-amber"></div>
+              <Spinner size="lg" className="border-amber" />
               <span className="text-sm">Laden...</span>
             </div>
           ) : (
             <>
-              <ErrorMessage error={authState.error} />
+              <Banner tone="error" message={authState.error} />
 
               {!authState.name ? (
                 <>
                   <Header isSignUp={authState.isSignUp} />
 
-                  {resetMessage && (
-                    <div
-                      role="status"
-                      aria-live="polite"
-                      className="mb-6 p-4 border rounded-xl bg-teal/10 border-teal/30"
-                    >
-                      <div className="flex items-start">
-                        <CheckIcon className="w-5 h-5 mr-3 mt-0.5 shrink-0 text-teal" />
-                        <p className="text-sm font-medium text-teal">
-                          {resetMessage}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+                  <Banner tone="success" message={resetMessage} />
 
                   <AuthForm
                     formState={formState}

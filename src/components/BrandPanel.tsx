@@ -1,5 +1,6 @@
 import React from "react";
-import { LightningIcon, CheckIcon } from "./index";
+import { LightningIcon, CheckIcon } from "../svg/index";
+import { APP_TITLE, APP_VERSION } from "../lib/config";
 
 const FEATURES = [
   { label: "Inloggen met Google of e-mail", tag: "oauth" },
@@ -10,21 +11,19 @@ const FEATURES = [
 const TAGS = ["React", "Firebase", "Tailwind CSS"];
 
 export const BrandPanel: React.FC = () => {
-  const appTitle = import.meta.env.VITE_APP_TITLE || "Firebase Auth Demo";
-
   return (
     <div className="relative flex flex-col justify-between p-6 sm:p-10 brand-bg border-b border-panel-line md:border-b-0 md:border-r">
       <div>
-        <div className="w-[52px] h-[52px] rounded-xl flex items-center justify-center bg-linear-to-br from-amber to-amber-dark text-[#14100a] animate-pulse-glow">
+        <div className="w-[52px] h-[52px] rounded-xl flex items-center justify-center bg-linear-to-br from-amber to-amber-dark text-on-amber animate-pulse-glow">
           <LightningIcon className="w-6 h-6" />
         </div>
 
         <span className="block mt-8 font-mono text-xs tracking-[0.2em] text-amber">
-          {"// auth.demo.v2"}
+          {`// ${APP_VERSION}`}
         </span>
 
         <p className="mt-3 font-display text-3xl font-bold tracking-tight text-text">
-          {appTitle}
+          {APP_TITLE}
         </p>
         <p className="mt-3 text-muted leading-relaxed">
           Een moderne authenticatie-demo, gebouwd met React, Firebase en

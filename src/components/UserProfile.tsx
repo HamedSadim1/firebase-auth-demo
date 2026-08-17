@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { UserIcon, CheckIcon, SignOutIcon, FileUpload } from "./index";
+import { UserIcon, CheckIcon, SignOutIcon } from "../svg/index";
+import { FileUpload, Spinner } from "./index";
 
 interface UserProfileProps {
   name: string;
@@ -63,7 +64,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
       >
         {loading ? (
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-2"></div>
+            <Spinner className="border-current mr-2" />
             Bezig met afmelden...
           </div>
         ) : (

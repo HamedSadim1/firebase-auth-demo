@@ -1,4 +1,5 @@
 import React from "react";
+import { getButtonClasses } from "../lib/styles";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -37,7 +38,7 @@ export class ErrorBoundary extends React.Component<
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="mt-6 w-full rounded-lg bg-linear-to-r from-amber to-amber-dark py-3 px-4 font-semibold text-[#14100a] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              className={`mt-6 ${getButtonClasses()}`}
             >
               Herlaad de pagina
             </button>

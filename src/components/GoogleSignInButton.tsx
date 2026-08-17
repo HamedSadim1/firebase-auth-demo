@@ -1,5 +1,6 @@
 import React from "react";
-import { GoogleLogo } from "./index";
+import { GoogleLogo } from "../svg/index";
+import { Spinner } from "./index";
 import { getButtonClasses } from "../lib/styles";
 
 interface GoogleSignInButtonProps {
@@ -24,10 +25,10 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
       )} flex items-center justify-center gap-3`}
     >
       {loading ? (
-        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-current"></div>
+        <Spinner className="border-current" />
       ) : (
         <>
-          <GoogleLogo />
+          <GoogleLogo className="w-6 h-6" />
           <span>Doorgaan met Google</span>
         </>
       )}

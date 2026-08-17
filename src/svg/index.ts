@@ -1,3 +1,4 @@
+export type { IconProps } from "./Icon";
 export { GoogleLogo } from "./GoogleLogo";
 export { CheckIcon } from "./CheckIcon";
 export { WarningIcon } from "./WarningIcon";
