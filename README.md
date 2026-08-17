@@ -1,29 +1,32 @@
 # Firebase Authentication Demo
 
-A modern React application demonstrating Firebase authentication with both Google OAuth and email/password authentication, built with Vite and styled with Tailwind CSS v4.
+A modern React application demonstrating Firebase authentication — Google OAuth and email/password — with profile-photo uploads to Firebase Storage. Built with Vite, TypeScript and Tailwind CSS v4.
 
 ## 🚀 Features
 
-- **Google OAuth Authentication** - Sign in with Google account
-- **Email/Password Authentication** - Register and login with email and password
-- **Modern UI** - Beautiful, responsive design with Tailwind CSS
-- **Loading States** - Visual feedback during authentication
-- **Error Handling** - Comprehensive error messages
-- **TypeScript** - Full type safety
+- **Google OAuth** — sign in with a Google account
+- **Email/password authentication** — register and log in with email and password
+- **Persistent sessions** — `onAuthStateChanged` + `setPersistence` ("Onthoud mij")
+- **Password reset** — sends a reset link via `sendPasswordResetEmail`
+- **Profile photo upload** — uploads an avatar to Firebase Storage
+- **Responsive dark UI** — amber/teal identity, keyboard-accessible and screen-reader friendly
+- **Per-action loading states** and Dutch error messages
+- **TypeScript** — full type safety end-to-end
 
 ## 🛠️ Tech Stack
 
-- **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Build tool and dev server
-- **Tailwind CSS v4** - Utility-first CSS framework
-- **Firebase Authentication** - Authentication service
+- **React 19** — UI library
+- **TypeScript** — type safety
+- **Vite** — build tool and dev server
+- **Tailwind CSS v4** — utility-first styling (`@tailwindcss/vite`)
+- **Firebase** — Authentication + Storage
+- **tailwind-merge + clsx** — conflict-free class merging via `cn()`
 
 ## 📋 Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
-- Firebase project
+- Node.js `^20.19.0` or `>=22.12.0` (Vite requirement)
+- npm
+- A Firebase project
 
 ## 🔧 Setup
 
@@ -31,7 +34,7 @@ A modern React application demonstrating Firebase authentication with both Googl
 
    ```bash
    git clone <repository-url>
-   cd firebase-basics
+   cd firebase-auth-demo
    ```
 
 2. **Install dependencies**
@@ -40,7 +43,7 @@ A modern React application demonstrating Firebase authentication with both Googl
    npm install
    ```
 
-3. **Environment Configuration**
+3. **Environment configuration**
 
    Copy the example environment file:
 
@@ -48,7 +51,7 @@ A modern React application demonstrating Firebase authentication with both Googl
    cp .env.example .env
    ```
 
-   Fill in your Firebase configuration in `.env`:
+   Fill in your Firebase config in `.env`:
 
    ```env
    # Get these from Firebase Console > Project Settings > General > Your apps
@@ -59,18 +62,18 @@ A modern React application demonstrating Firebase authentication with both Googl
    VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
    VITE_FIREBASE_APP_ID=your_app_id
 
-   # App configuration
+   # App configuration (optional — defaults shown)
    VITE_APP_TITLE=Firebase Auth Demo
-   VITE_APP_VERSION=1.0.0
+   VITE_APP_VERSION=auth.demo.v2
+   VITE_STORAGE_UPLOAD_PATH=profile-images
    ```
 
-4. **Firebase Setup**
+4. **Firebase setup**
 
-   - Go to [Firebase Console](https://console.firebase.google.com/)
-   - Create a new project or use existing one
-   - Enable Authentication in the Firebase Console
-   - Configure sign-in methods (Google and Email/Password)
-   - Copy the config values to your `.env` file
+   - Create a project in the [Firebase Console](https://console.firebase.google.com/)
+   - Enable **Authentication** and configure the **Google** and **Email/Password** sign-in methods
+   - Enable **Storage** if you want photo uploads to work
+   - Copy the config values into `.env`
 
 ## 🚀 Running the Application
 
@@ -88,7 +91,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 npm run build
 ```
 
-### Preview Production Build
+### Preview the Production Build
 
 ```bash
 npm run preview
@@ -123,12 +126,33 @@ This project ships with linting and commit tooling wired up via [husky](https://
 
 ```
 src/
-├── App.tsx              # Main application component
-├── firebaseConfig.tsx   # Firebase configuration
-├── index.tsx           # Application entry point
-├── vite-env.d.ts       # Vite environment types
-└── ...
+├── App.tsx              # Orchestrates the auth flow
+├── index.tsx            # Entry point (wrapped in ErrorBoundary)
+├── index.css            # Tailwind import + design tokens (@theme)
+├── firebaseConfig.tsx   # Firebase init + env validation
+├── components/
+│   ├── index.ts         # Barrel export
+│   ├── ErrorBoundary.tsx
+│   ├── auth/            # Login/register screen
+│   ├── profile/         # Logged-in screen
+│   └── ui/              # Reusable primitives (Banner, Spinner, LoadingState)
+├── hooks/
+│   ├── useAuth.ts       # Session state + Firebase operations
+│   └── useAuthForm.ts   # Form state + validation
+├── lib/
+│   ├── constants.ts     # Central constants + messages
+│   ├── config.ts        # env-driven configuration
+│   ├── types.ts         # Shared types
+│   ├── validation.ts    # Validators
+│   ├── errors.ts        # Firebase error → message mapping
+│   ├── styles.ts        # Shared class builders + focus rings
+│   ├── async.ts         # withTimeout helper
+│   ├── cn.ts            # clsx + tailwind-merge
+│   └── user.ts          # getUserDisplayName helper
+└── svg/                 # Icons (Icon base + individual icons)
 ```
+
+> Imports use the `@/` path alias, which points to `src/` (configured in `tsconfig.json` and `vite.config.mjs`).
 
 ## 🤝 Contributing
 
@@ -137,23 +161,3 @@ src/
 3. Make your changes
 4. Test thoroughly
 5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).

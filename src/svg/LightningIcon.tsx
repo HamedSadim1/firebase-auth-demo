@@ -1,0 +1,8 @@
+import React from "react";
+import { IconProps, Svg } from "@/svg/Icon";
+
+export const LightningIcon: React.FC<IconProps> = ({ className }) => (
+  <Svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </Svg>
+);

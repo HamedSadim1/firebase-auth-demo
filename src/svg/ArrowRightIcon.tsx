@@ -1,7 +1,7 @@
 import React from "react";
 import { IconProps, Svg } from "@/svg/Icon";
 
-export const EyeClosedIcon: React.FC<IconProps> = ({ className }) => (
+export const ArrowRightIcon: React.FC<IconProps> = ({ className }) => (
   <Svg
     className={className}
     fill="none"
@@ -12,7 +12,7 @@ export const EyeClosedIcon: React.FC<IconProps> = ({ className }) => (
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
-      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+      d="M13.5 4.5 21 12l-7.5 7.5M21 12H3"
     />
   </Svg>
 );

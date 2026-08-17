@@ -1,21 +1,10 @@
-export { ErrorMessage } from "./ErrorMessage";
-export { DarkModeToggle } from "./DarkModeToggle";
-export { Header } from "./Header";
-export { AuthForm } from "./AuthForm";
-export { GoogleSignInButton } from "./GoogleSignInButton";
-export { UserProfile } from "./UserProfile";
-export { FileUpload } from "./FileUpload";
-
-// SVG Icons
-export { SunIcon } from "../svg/SunIcon";
-export { MoonIcon } from "../svg/MoonIcon";
-export { GoogleLogo } from "../svg/GoogleLogo";
-export { FirebaseLogo } from "../svg/FirebaseLogo";
-export { CheckIcon } from "../svg/CheckIcon";
-export { WarningIcon } from "../svg/WarningIcon";
-export { EyeOpenIcon } from "../svg/EyeOpenIcon";
-export { EyeClosedIcon } from "../svg/EyeClosedIcon";
-export { SignInIcon } from "../svg/SignInIcon";
-export { SignOutIcon } from "../svg/SignOutIcon";
-export { UserIcon } from "../svg/UserIcon";
-export { UploadIcon } from "../svg/UploadIcon";
+export { AuthShell } from "@/components/auth/AuthShell";
+export { BrandPanel } from "@/components/auth/BrandPanel";
+export { Header } from "@/components/auth/Header";
+export { AuthForm } from "@/components/auth/AuthForm";
+export { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+export { UserProfile } from "@/components/profile/UserProfile";
+export { FileUpload } from "@/components/profile/FileUpload";
+export { Spinner } from "@/components/ui/Spinner";
+export { Banner } from "@/components/ui/Banner";
+export { LoadingState } from "@/components/ui/LoadingState";
