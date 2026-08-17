@@ -4,7 +4,7 @@ import { LightningIcon, CheckIcon } from "./index";
 const FEATURES = [
   { label: "Inloggen met Google of e-mail", tag: "oauth" },
   { label: "Profielfoto uploaden", tag: "storage" },
-  { label: "Licht- en donkere modus", tag: "theme" },
+  { label: "Wachtwoord herstellen", tag: "reset" },
 ];
 
 const TAGS = ["React", "Firebase", "Tailwind CSS"];

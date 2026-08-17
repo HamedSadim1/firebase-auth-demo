@@ -1,6 +1,5 @@
 export { BrandPanel } from "./BrandPanel";
 export { ErrorMessage } from "./ErrorMessage";
-export { DarkModeToggle } from "./DarkModeToggle";
 export { Header } from "./Header";
 export { AuthForm } from "./AuthForm";
 export { GoogleSignInButton } from "./GoogleSignInButton";
@@ -8,8 +7,6 @@ export { UserProfile } from "./UserProfile";
 export { FileUpload } from "./FileUpload";
 
 // SVG Icons
-export { SunIcon } from "../svg/SunIcon";
-export { MoonIcon } from "../svg/MoonIcon";
 export { GoogleLogo } from "../svg/GoogleLogo";
 export { FirebaseLogo } from "../svg/FirebaseLogo";
 export { CheckIcon } from "../svg/CheckIcon";

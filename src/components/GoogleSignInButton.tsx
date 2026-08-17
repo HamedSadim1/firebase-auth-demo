@@ -16,6 +16,8 @@ export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
     <button
       onClick={onClick}
       disabled={loading}
+      aria-label="Doorgaan met Google"
+      aria-busy={loading}
       className={`${getButtonClasses(
         "secondary",
       )} flex items-center justify-center gap-3`}

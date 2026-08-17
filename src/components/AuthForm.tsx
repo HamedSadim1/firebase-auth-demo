@@ -29,6 +29,7 @@ interface AuthFormProps {
   onTogglePassword: () => void;
   onRememberMeChange: (checked: boolean) => void;
   onToggleSignUp: () => void;
+  onForgotPassword: () => void;
   onSubmit: (e: React.FormEvent) => void;
   getInputClasses: (hasError?: boolean) => string;
   getLabelClasses: () => string;
@@ -43,6 +44,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   onTogglePassword,
   onRememberMeChange,
   onToggleSignUp,
+  onForgotPassword,
   onSubmit,
   getInputClasses,
   getLabelClasses,
@@ -97,7 +99,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             <button
               type="button"
               onClick={onTogglePassword}
-              className="absolute right-3 top-3.5 transition-all duration-200 text-muted-dim hover:text-muted hover:scale-110 active:scale-95"
+              className="absolute right-3 top-3.5 rounded transition-all duration-200 text-muted-dim hover:text-muted hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber"
             >
               {formState.showPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
             </button>
@@ -127,7 +129,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           </label>
           <button
             type="button"
-            className="text-sm font-medium text-amber hover:text-amber/80 transition-colors duration-200 hover:underline underline-offset-4"
+            onClick={onForgotPassword}
+            disabled={authState.loading}
+            className="text-sm font-medium text-amber hover:text-amber/80 transition-colors duration-200 hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber rounded disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Wachtwoord vergeten?
           </button>
@@ -160,7 +164,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         {authState.isSignUp ? "Heb je al een account? " : "Nog geen account? "}
         <button
           onClick={onToggleSignUp}
-          className="font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200"
+          className="font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber rounded"
         >
           {authState.isSignUp ? "Log in" : "Registreer je"}
         </button>

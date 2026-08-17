@@ -16,7 +16,7 @@
   --color-danger: #ff6b6b;
   --color-text: #e9ebef;
   --color-muted: #8b93a3;
-  --color-muted-dim: #565d6b;
+  --color-muted-dim: #7a8494;
 
   --animate-fade-in-up: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;

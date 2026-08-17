@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { storage } from "../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { UploadIcon } from "../svg/UploadIcon";
@@ -15,6 +15,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleLabelKeyDown = (e: React.KeyboardEvent<HTMLLabelElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      inputRef.current?.click();
+    }
+  };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -79,7 +87,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         <div>
           <label
             htmlFor="file-upload"
-            className={`inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 bg-panel text-text border-panel-line hover:bg-panel-line/30 ${
+            role="button"
+            tabIndex={uploading ? -1 : 0}
+            onKeyDown={handleLabelKeyDown}
+            className={`inline-flex items-center px-4 py-2 border text-sm font-medium rounded-lg cursor-pointer transition-all duration-200 bg-panel text-text border-panel-line hover:bg-panel-line/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${
               uploading ? "opacity-60 cursor-not-allowed" : ""
             }`}
           >
@@ -88,6 +99,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           </label>
           <input
             id="file-upload"
+            ref={inputRef}
             type="file"
             accept="image/*"
             onChange={(e) => void handleFileSelect(e)}

@@ -1,5 +1,3 @@
-export { SunIcon } from "./SunIcon";
-export { MoonIcon } from "./MoonIcon";
 export { GoogleLogo } from "./GoogleLogo";
 export { FirebaseLogo } from "./FirebaseLogo";
 export { CheckIcon } from "./CheckIcon";

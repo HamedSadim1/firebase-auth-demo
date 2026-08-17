@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { auth } from "./firebaseConfig";
+import { FirebaseError } from "firebase/app";
 
 import {
   GoogleAuthProvider,
@@ -7,18 +8,62 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
   User,
 } from "firebase/auth";
 
 import {
   BrandPanel,
+  CheckIcon,
   ErrorMessage,
-  DarkModeToggle,
   Header,
   AuthForm,
   GoogleSignInButton,
   UserProfile,
 } from "./components/index";
+
+const getUserDisplayName = (user: User): string => {
+  return user.displayName ?? user.email ?? "Gebruiker";
+};
+
+const getErrorMessage = (error: unknown): string => {
+  const code = error instanceof FirebaseError ? error.code : "";
+  switch (code) {
+    case "auth/invalid-credential":
+      return "Ongeldige inloggegevens. Controleer je e-mailadres en wachtwoord.";
+    case "auth/invalid-email":
+      return "Ongeldig e-mailadres.";
+    case "auth/user-not-found":
+      return "Geen account gevonden met dit e-mailadres.";
+    case "auth/wrong-password":
+      return "Onjuist wachtwoord.";
+    case "auth/email-already-in-use":
+      return "Er bestaat al een account met dit e-mailadres.";
+    case "auth/weak-password":
+      return "Wachtwoord is te zwak. Gebruik minstens 6 tekens.";
+    case "auth/user-disabled":
+      return "Dit account is uitgeschakeld.";
+    case "auth/too-many-requests":
+      return "Te veel pogingen. Probeer het later opnieuw.";
+    case "auth/network-request-failed":
+      return "Geen netwerkverbinding. Controleer je verbinding en probeer opnieuw.";
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+      return "Aanmelden geannuleerd.";
+    case "auth/operation-not-allowed":
+      return "Deze aanmeldmethode is niet ingeschakeld.";
+    case "auth/requires-recent-login":
+      return "Log opnieuw in om deze actie uit te voeren.";
+    case "auth/account-exists-with-different-credential":
+      return "Er bestaat al een account met een andere aanmeldmethode.";
+    default:
+      return "Er is iets misgegaan. Probeer het opnieuw.";
+  }
+};
 
 function App() {
   // Group related state into objects for better organization
@@ -39,6 +84,27 @@ function App() {
     isSignUp: false,
   });
 
+  const [resetMessage, setResetMessage] = useState("");
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setAuthState((prev) => ({
+          ...prev,
+          name: getUserDisplayName(user),
+          photoUrl: user.photoURL ?? "",
+        }));
+      } else {
+        setAuthState((prev) => ({
+          ...prev,
+          name: "",
+          photoUrl: "",
+        }));
+      }
+    });
+    return unsubscribe;
+  }, []);
+
   // DRY: Helper functions
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,12 +115,17 @@ function App() {
     return password.length >= 6;
   };
 
-  const getUserDisplayName = (user: User): string => {
-    return user.displayName ?? user.email ?? "";
-  };
-
   const clearForm = () => {
     setFormState((prev) => ({ ...prev, email: "", password: "" }));
+  };
+
+  const applyPersistence = async () => {
+    await setPersistence(
+      auth,
+      formState.rememberMe
+        ? browserLocalPersistence
+        : browserSessionPersistence,
+    );
   };
 
   const handleAsyncOperation = async (operation: () => Promise<void>) => {
@@ -63,8 +134,7 @@ function App() {
       await operation();
     } catch (error: unknown) {
       console.error(error);
-      const errorMessage =
-        error instanceof Error ? error.message : "An error occurred";
+      const errorMessage = getErrorMessage(error);
       setAuthState((prev) => ({
         ...prev,
         error: errorMessage,
@@ -98,6 +168,7 @@ function App() {
 
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    setResetMessage("");
     setFormState((prev) => ({
       ...prev,
       email: value,
@@ -121,40 +192,27 @@ function App() {
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     await handleAsyncOperation(async () => {
+      await applyPersistence();
       if (authState.isSignUp) {
-        const userCredential = await createUserWithEmailAndPassword(
+        await createUserWithEmailAndPassword(
           auth,
           formState.email,
           formState.password,
         );
-        setAuthState((prev) => ({
-          ...prev,
-          name: getUserDisplayName(userCredential.user),
-          photoUrl: "",
-        }));
       } else {
-        const userCredential = await signInWithEmailAndPassword(
+        await signInWithEmailAndPassword(
           auth,
           formState.email,
           formState.password,
         );
-        setAuthState((prev) => ({
-          ...prev,
-          name: getUserDisplayName(userCredential.user),
-        }));
       }
     });
   };
   const signIn = async () => {
     await handleAsyncOperation(async () => {
+      await applyPersistence();
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      setAuthState((prev) => ({
-        ...prev,
-        name: getUserDisplayName(user),
-        photoUrl: user.photoURL ?? "",
-      }));
+      await signInWithPopup(auth, provider);
       clearForm();
     });
   };
@@ -162,13 +220,27 @@ function App() {
   const signOutUser = async () => {
     await handleAsyncOperation(async () => {
       await signOut(auth);
+      setAuthState((prev) => ({ ...prev, error: "" }));
+      setResetMessage("");
+      clearForm();
+    });
+  };
+
+  const handleForgotPassword = async () => {
+    const email = formState.email.trim();
+    setResetMessage("");
+    if (!validateEmail(email)) {
       setAuthState((prev) => ({
         ...prev,
-        name: "",
-        photoUrl: "",
-        error: "",
+        error: "Voer eerst een geldig e-mailadres in",
       }));
-      clearForm();
+      return;
+    }
+    await handleAsyncOperation(async () => {
+      await sendPasswordResetEmail(auth, email);
+      setResetMessage(
+        `Er is een reset-link verstuurd naar ${email}. Check je inbox.`,
+      );
     });
   };
 
@@ -192,8 +264,6 @@ function App() {
         backgroundSize: "42px 42px, 42px 42px, 100% 100%, 100% 100%",
       }}
     >
-      <DarkModeToggle />
-
       <div className="relative w-full max-w-[960px] overflow-hidden rounded-2xl shadow-2xl border border-panel-line bg-panel grid grid-cols-1 md:grid-cols-2 animate-fade-in-up">
         <BrandPanel />
 
@@ -201,6 +271,15 @@ function App() {
           <Header isSignUp={authState.isSignUp} />
 
           <ErrorMessage error={authState.error} />
+
+          {resetMessage && (
+            <div className="mb-6 p-4 border rounded-xl bg-teal/10 border-teal/30">
+              <div className="flex items-start">
+                <CheckIcon className="w-5 h-5 mr-3 mt-0.5 shrink-0 text-teal" />
+                <p className="text-sm font-medium text-teal">{resetMessage}</p>
+              </div>
+            </div>
+          )}
 
           {!authState.name ? (
             <>
@@ -224,6 +303,7 @@ function App() {
                     isSignUp: !prev.isSignUp,
                   }))
                 }
+                onForgotPassword={() => void handleForgotPassword()}
                 onSubmit={(e) => void handleEmailAuth(e)}
                 getInputClasses={getInputClasses}
                 getLabelClasses={getLabelClasses}
