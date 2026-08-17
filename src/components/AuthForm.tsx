@@ -24,7 +24,6 @@ interface AuthState {
 interface AuthFormProps {
   formState: FormState;
   authState: AuthState;
-  isDarkMode: boolean;
   onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTogglePassword: () => void;
@@ -39,7 +38,6 @@ interface AuthFormProps {
 export const AuthForm: React.FC<AuthFormProps> = ({
   formState,
   authState,
-  isDarkMode,
   onEmailChange,
   onPasswordChange,
   onTogglePassword,
@@ -51,7 +49,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   getButtonClasses,
 }) => {
   return (
-    <div className="px-8 pb-8 space-y-6">
+    <div className="space-y-6">
       <form onSubmit={onSubmit} className="space-y-5">
         <div>
           <label htmlFor="email" className={getLabelClasses()}>
@@ -69,12 +67,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             />
             <div className="absolute right-3 top-3.5">
               {formState.email && !formState.emailError && (
-                <CheckIcon className="w-5 h-5 text-green-500" />
+                <CheckIcon className="w-5 h-5 text-emerald-500" />
               )}
             </div>
           </div>
           {formState.emailError && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
+            <p className="mt-1 text-sm text-rose-600 flex items-center">
               <WarningIcon className="w-4 h-4 mr-1" />
               {formState.emailError}
             </p>
@@ -99,17 +97,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             <button
               type="button"
               onClick={onTogglePassword}
-              className={`absolute right-3 top-3.5 transition-colors duration-200 ${
-                isDarkMode
-                  ? "text-gray-400 hover:text-gray-200"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className="absolute right-3 top-3.5 transition-colors duration-200 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200"
             >
               {formState.showPassword ? <EyeClosedIcon /> : <EyeOpenIcon />}
             </button>
           </div>
           {formState.passwordError && (
-            <p className="mt-1 text-sm text-red-600 flex items-center">
+            <p className="mt-1 text-sm text-rose-600 flex items-center">
               <WarningIcon className="w-4 h-4 mr-1" />
               {formState.passwordError}
             </p>
@@ -123,15 +117,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             type="checkbox"
             checked={formState.rememberMe}
             onChange={(e) => onRememberMeChange(e.target.checked)}
-            className={`h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${
-              isDarkMode ? "bg-gray-800 border-gray-600" : ""
-            }`}
+            className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:bg-slate-800 dark:border-slate-600"
           />
           <label
             htmlFor="remember-me"
-            className={`ml-2 block text-sm transition-colors duration-300 ${
-              isDarkMode ? "text-gray-300" : "text-gray-700"
-            }`}
+            className="ml-2 block text-sm transition-colors duration-200 text-slate-600 dark:text-slate-300"
           >
             Remember me
           </label>
@@ -163,11 +153,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       <div className="text-center">
         <button
           onClick={onToggleSignUp}
-          className={`text-sm font-medium transition-colors duration-300 ${
-            isDarkMode
-              ? "text-blue-400 hover:text-blue-300"
-              : "text-blue-600 hover:text-blue-800"
-          }`}
+          className="text-sm font-medium transition-colors duration-200 text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
         >
           {authState.isSignUp
             ? "Already have an account? Sign In"
@@ -177,20 +163,10 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div
-            className={`w-full border-t ${
-              isDarkMode ? "border-gray-600" : "border-gray-300"
-            }`}
-          />
+          <div className="w-full border-t border-slate-200 dark:border-slate-700" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span
-            className={`px-4 ${
-              isDarkMode
-                ? "bg-gray-900 text-gray-400"
-                : "bg-white text-gray-500"
-            }`}
-          >
+          <span className="px-4 bg-white text-slate-500 dark:bg-slate-900 dark:text-slate-400">
             Or continue with
           </span>
         </div>

@@ -1,3 +1,4 @@
+export { BrandPanel } from "./BrandPanel";
 export { ErrorMessage } from "./ErrorMessage";
 export { DarkModeToggle } from "./DarkModeToggle";
 export { Header } from "./Header";

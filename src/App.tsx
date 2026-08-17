@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { auth } from "./firebaseConfig";
 
 import {
@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 
 import {
+  BrandPanel,
   ErrorMessage,
   DarkModeToggle,
   Header,
@@ -38,7 +39,16 @@ function App() {
     isSignUp: false,
   });
 
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored) return stored === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
 
   // DRY: Helper functions
   const validateEmail = (email: string): boolean => {
@@ -77,38 +87,24 @@ function App() {
 
   // DRY: Styling constants
   const getInputClasses = (hasError = false) => `
-    w-full pl-4 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${
-      isDarkMode
-        ? `bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:bg-gray-800 ${
-            hasError ? "border-red-400" : ""
-          }`
-        : `bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500 focus:bg-white ${
-            hasError ? "border-red-300" : ""
-          }`
+    w-full px-4 py-3 rounded-xl border text-sm shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 bg-white border-slate-300 text-slate-900 placeholder-slate-400 dark:bg-slate-800/60 dark:border-slate-600 dark:text-white dark:placeholder-slate-500 dark:focus:bg-slate-800 ${
+      hasError
+        ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/30 dark:border-rose-500"
+        : "focus:border-indigo-500 focus:ring-indigo-500/30 dark:focus:border-indigo-400 dark:focus:ring-indigo-400/30"
     }
   `;
 
   const getLabelClasses = () => `
-    block text-sm font-semibold mb-2 transition-colors duration-300 ${
-      isDarkMode ? "text-gray-200" : "text-gray-700"
-    }
+    block text-sm font-medium mb-2 transition-colors duration-200 text-slate-700 dark:text-slate-200
   `;
 
   const getButtonClasses = (variant: "primary" | "secondary" = "primary") => {
     const baseClasses =
-      "w-full py-3 px-4 rounded-xl font-semibold transition-all duration-300 focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+      "w-full py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]";
     if (variant === "secondary") {
-      return `${baseClasses} ${
-        isDarkMode
-          ? "bg-gray-700 hover:bg-gray-600 text-gray-200 focus:ring-gray-500"
-          : "bg-gray-100 hover:bg-gray-200 text-gray-700 focus:ring-gray-500"
-      }`;
+      return `${baseClasses} bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 focus-visible:ring-indigo-500 dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-700 dark:hover:border-slate-500 dark:focus-visible:ring-indigo-400`;
     }
-    return `${baseClasses} ${
-      isDarkMode
-        ? "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white focus:ring-blue-500 shadow-blue-500/25"
-        : "bg-linear-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white focus:ring-blue-500 shadow-blue-500/25"
-    } shadow-lg`;
+    return `${baseClasses} bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:ring-indigo-500 shadow-lg shadow-indigo-600/25 dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus-visible:ring-indigo-400 dark:shadow-indigo-500/20`;
   };
 
   const handleEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,83 +193,70 @@ function App() {
   };
 
   return (
-    <div
-      className={`min-h-screen transition-all duration-500 ${
-        isDarkMode
-          ? "bg-linear-to-br from-gray-900 via-blue-900 to-indigo-900"
-          : "bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50"
-      } flex items-center justify-center p-4 relative overflow-hidden`}
-    >
+    <div className="min-h-screen transition-colors duration-500 bg-linear-to-br from-slate-50 via-indigo-50/70 to-violet-100 dark:from-slate-950 dark:via-indigo-950 dark:to-violet-950 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-purple-500 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-indigo-500 rounded-full blur-3xl"></div>
+        <div className="absolute top-10 left-10 w-32 h-32 bg-indigo-400 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-violet-400 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-fuchsia-400 rounded-full blur-3xl"></div>
       </div>
 
-      <DarkModeToggle
-        isDarkMode={isDarkMode}
-        onToggle={() => setIsDarkMode(!isDarkMode)}
-      />
+      <DarkModeToggle onToggle={() => setIsDarkMode((prev) => !prev)} />
 
-      <div
-        className={`relative backdrop-blur-xl rounded-3xl shadow-2xl max-w-md w-full border transition-all duration-500 ${
-          isDarkMode
-            ? "bg-gray-900/90 border-gray-700/50 shadow-gray-900/50"
-            : "bg-white/90 border-gray-200/50 shadow-gray-200/50"
-        } hover:shadow-3xl transform hover:scale-[1.02] transition-all duration-300`}
-      >
-        <Header isDarkMode={isDarkMode} isSignUp={authState.isSignUp} />
+      <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl shadow-2xl border grid lg:grid-cols-2 transition-colors duration-300 bg-white/90 border-slate-200/50 shadow-slate-300/40 dark:bg-slate-900/90 dark:border-slate-700/50 dark:shadow-slate-950/50">
+        <BrandPanel />
 
-        <ErrorMessage error={authState.error} isDarkMode={isDarkMode} />
+        <div className="p-6 sm:p-10">
+          <Header isSignUp={authState.isSignUp} />
 
-        {!authState.name ? (
-          <>
-            <AuthForm
-              formState={formState}
-              authState={authState}
-              isDarkMode={isDarkMode}
-              onEmailChange={handleEmail}
-              onPasswordChange={handlePassword}
-              onTogglePassword={() =>
-                setFormState((prev) => ({
-                  ...prev,
-                  showPassword: !prev.showPassword,
-                }))
-              }
-              onRememberMeChange={(checked) =>
-                setFormState((prev) => ({ ...prev, rememberMe: checked }))
-              }
-              onToggleSignUp={() =>
-                setAuthState((prev) => ({
-                  ...prev,
-                  isSignUp: !prev.isSignUp,
-                }))
-              }
-              onSubmit={(e) => void handleEmailAuth(e)}
-              getInputClasses={getInputClasses}
-              getLabelClasses={getLabelClasses}
-              getButtonClasses={getButtonClasses}
-            />
+          <ErrorMessage error={authState.error} />
 
-            <div className="px-8 pb-8">
-              <GoogleSignInButton
-                onClick={() => void signIn()}
-                loading={authState.loading}
+          {!authState.name ? (
+            <>
+              <AuthForm
+                formState={formState}
+                authState={authState}
+                onEmailChange={handleEmail}
+                onPasswordChange={handlePassword}
+                onTogglePassword={() =>
+                  setFormState((prev) => ({
+                    ...prev,
+                    showPassword: !prev.showPassword,
+                  }))
+                }
+                onRememberMeChange={(checked) =>
+                  setFormState((prev) => ({ ...prev, rememberMe: checked }))
+                }
+                onToggleSignUp={() =>
+                  setAuthState((prev) => ({
+                    ...prev,
+                    isSignUp: !prev.isSignUp,
+                  }))
+                }
+                onSubmit={(e) => void handleEmailAuth(e)}
+                getInputClasses={getInputClasses}
+                getLabelClasses={getLabelClasses}
                 getButtonClasses={getButtonClasses}
               />
-            </div>
-          </>
-        ) : (
-          <UserProfile
-            name={authState.name}
-            photoUrl={authState.photoUrl}
-            isDarkMode={isDarkMode}
-            onSignOut={() => void signOutUser()}
-            onPhotoUpload={handlePhotoUpload}
-            loading={authState.loading}
-          />
-        )}
+
+              <div className="mt-6">
+                <GoogleSignInButton
+                  onClick={() => void signIn()}
+                  loading={authState.loading}
+                  getButtonClasses={getButtonClasses}
+                />
+              </div>
+            </>
+          ) : (
+            <UserProfile
+              name={authState.name}
+              photoUrl={authState.photoUrl}
+              onSignOut={() => void signOutUser()}
+              onPhotoUpload={handlePhotoUpload}
+              loading={authState.loading}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
