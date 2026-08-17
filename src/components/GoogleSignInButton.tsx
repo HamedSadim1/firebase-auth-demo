@@ -4,18 +4,20 @@ import { GoogleLogo } from "./index";
 interface GoogleSignInButtonProps {
   onClick: () => void;
   loading: boolean;
+  busy: boolean;
   getButtonClasses: (variant?: "primary" | "secondary") => string;
 }
 
 export const GoogleSignInButton: React.FC<GoogleSignInButtonProps> = ({
   onClick,
   loading,
+  busy,
   getButtonClasses,
 }) => {
   return (
     <button
       onClick={onClick}
-      disabled={loading}
+      disabled={busy}
       aria-label="Doorgaan met Google"
       aria-busy={loading}
       className={`${getButtonClasses(

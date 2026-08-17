@@ -16,14 +16,12 @@ interface FormState {
   rememberMe: boolean;
 }
 
-interface AuthState {
-  loading: boolean;
-  isSignUp: boolean;
-}
-
 interface AuthFormProps {
   formState: FormState;
-  authState: AuthState;
+  isSignUp: boolean;
+  loading: boolean;
+  resetLoading: boolean;
+  busy: boolean;
   onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onTogglePassword: () => void;
@@ -38,7 +36,10 @@ interface AuthFormProps {
 
 export const AuthForm: React.FC<AuthFormProps> = ({
   formState,
-  authState,
+  isSignUp,
+  loading,
+  resetLoading,
+  busy,
   onEmailChange,
   onPasswordChange,
   onTogglePassword,
@@ -130,23 +131,19 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           <button
             type="button"
             onClick={onForgotPassword}
-            disabled={authState.loading}
+            disabled={busy}
             className="text-sm font-medium text-amber hover:text-amber/80 transition-colors duration-200 hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber rounded disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Wachtwoord vergeten?
+            {resetLoading ? "Versturen..." : "Wachtwoord vergeten?"}
           </button>
         </div>
 
         <button
           type="submit"
-          disabled={
-            authState.loading ||
-            !!formState.emailError ||
-            !!formState.passwordError
-          }
+          disabled={busy || !!formState.emailError || !!formState.passwordError}
           className={getButtonClasses()}
         >
-          {authState.loading ? (
+          {loading ? (
             <div className="flex items-center justify-center">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#14100a] mr-2"></div>
               Bezig...
@@ -154,19 +151,19 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           ) : (
             <span className="flex items-center justify-center gap-2">
               <ArrowRightIcon className="w-5 h-5" />
-              {authState.isSignUp ? "Registreren" : "Inloggen"}
+              {isSignUp ? "Registreren" : "Inloggen"}
             </span>
           )}
         </button>
       </form>
 
       <p className="text-center text-sm text-muted">
-        {authState.isSignUp ? "Heb je al een account? " : "Nog geen account? "}
+        {isSignUp ? "Heb je al een account? " : "Nog geen account? "}
         <button
           onClick={onToggleSignUp}
           className="font-medium text-teal hover:text-teal/80 hover:underline underline-offset-4 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber rounded"
         >
-          {authState.isSignUp ? "Log in" : "Registreer je"}
+          {isSignUp ? "Log in" : "Registreer je"}
         </button>
       </p>
 

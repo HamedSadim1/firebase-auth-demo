@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { storage } from "../firebaseConfig";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { UploadIcon } from "../svg/UploadIcon";
+import { UserIcon } from "../svg/UserIcon";
 
 interface FileUploadProps {
   onUploadComplete: (url: string) => void;
@@ -15,6 +16,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleLabelKeyDown = (e: React.KeyboardEvent<HTMLLabelElement>) => {
@@ -56,6 +58,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       const downloadURL = await getDownloadURL(snapshot.ref);
 
       setPreviewUrl(downloadURL);
+      setImageError(false);
       onUploadComplete(downloadURL);
     } catch (error) {
       console.error("Upload error:", error);
@@ -70,16 +73,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div className="flex items-center gap-4">
         {/* Current/Preview Image */}
         <div className="relative">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-panel-line">
-            <img
-              src={previewUrl ?? currentPhotoUrl ?? ""}
-              alt="Profile"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // Fallback to user icon if image fails to load
-                e.currentTarget.style.display = "none";
-              }}
-            />
+          <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-panel-line flex items-center justify-center bg-panel">
+            {(previewUrl ?? currentPhotoUrl) && !imageError ? (
+              <img
+                src={previewUrl ?? currentPhotoUrl}
+                alt="Profile"
+                className="w-full h-full object-cover"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <UserIcon className="w-8 h-8 text-muted" />
+            )}
           </div>
         </div>
 
@@ -111,7 +115,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* Error Message */}
       {error && (
-        <div className="text-danger text-sm flex items-center">
+        <div role="alert" className="text-danger text-sm flex items-center">
           <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
@@ -125,7 +129,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
       {/* Success Message */}
       {previewUrl && !uploading && (
-        <div className="text-teal text-sm flex items-center">
+        <div
+          role="status"
+          aria-live="polite"
+          className="text-teal text-sm flex items-center"
+        >
           <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"

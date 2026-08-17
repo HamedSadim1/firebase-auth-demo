@@ -26,6 +26,8 @@ import {
   UserProfile,
 } from "./components/index";
 
+type LoadingAction = "email" | "google" | "reset" | "signout" | null;
+
 const getUserDisplayName = (user: User): string => {
   return user.displayName ?? user.email ?? "Gebruiker";
 };
@@ -79,12 +81,14 @@ function App() {
   const [authState, setAuthState] = useState({
     name: "",
     photoUrl: "",
-    loading: false,
     error: "",
     isSignUp: false,
   });
 
+  const [loadingAction, setLoadingAction] = useState<LoadingAction>(null);
+
   const [resetMessage, setResetMessage] = useState("");
+  const [authInitialized, setAuthInitialized] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -101,6 +105,7 @@ function App() {
           photoUrl: "",
         }));
       }
+      setAuthInitialized(true);
     });
     return unsubscribe;
   }, []);
@@ -116,7 +121,14 @@ function App() {
   };
 
   const clearForm = () => {
-    setFormState((prev) => ({ ...prev, email: "", password: "" }));
+    setFormState((prev) => ({
+      ...prev,
+      email: "",
+      password: "",
+      emailError: "",
+      passwordError: "",
+      showPassword: false,
+    }));
   };
 
   const applyPersistence = async () => {
@@ -128,8 +140,12 @@ function App() {
     );
   };
 
-  const handleAsyncOperation = async (operation: () => Promise<void>) => {
-    setAuthState((prev) => ({ ...prev, loading: true, error: "" }));
+  const handleAsyncOperation = async (
+    action: Exclude<LoadingAction, null>,
+    operation: () => Promise<void>,
+  ) => {
+    setLoadingAction(action);
+    setAuthState((prev) => ({ ...prev, error: "" }));
     try {
       await operation();
     } catch (error: unknown) {
@@ -140,7 +156,7 @@ function App() {
         error: errorMessage,
       }));
     } finally {
-      setAuthState((prev) => ({ ...prev, loading: false }));
+      setLoadingAction(null);
     }
   };
 
@@ -191,7 +207,7 @@ function App() {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleAsyncOperation(async () => {
+    await handleAsyncOperation("email", async () => {
       await applyPersistence();
       if (authState.isSignUp) {
         await createUserWithEmailAndPassword(
@@ -209,7 +225,7 @@ function App() {
     });
   };
   const signIn = async () => {
-    await handleAsyncOperation(async () => {
+    await handleAsyncOperation("google", async () => {
       await applyPersistence();
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
@@ -218,7 +234,7 @@ function App() {
   };
 
   const signOutUser = async () => {
-    await handleAsyncOperation(async () => {
+    await handleAsyncOperation("signout", async () => {
       await signOut(auth);
       setAuthState((prev) => ({ ...prev, error: "" }));
       setResetMessage("");
@@ -236,7 +252,7 @@ function App() {
       }));
       return;
     }
-    await handleAsyncOperation(async () => {
+    await handleAsyncOperation("reset", async () => {
       await sendPasswordResetEmail(auth, email);
       setResetMessage(
         `Er is een reset-link verstuurd naar ${email}. Check je inbox.`,
@@ -268,64 +284,86 @@ function App() {
         <BrandPanel />
 
         <div className="p-6 sm:p-10">
-          <Header isSignUp={authState.isSignUp} />
-
-          <ErrorMessage error={authState.error} />
-
-          {resetMessage && (
-            <div className="mb-6 p-4 border rounded-xl bg-teal/10 border-teal/30">
-              <div className="flex items-start">
-                <CheckIcon className="w-5 h-5 mr-3 mt-0.5 shrink-0 text-teal" />
-                <p className="text-sm font-medium text-teal">{resetMessage}</p>
-              </div>
+          {!authInitialized ? (
+            <div
+              role="status"
+              className="flex min-h-[360px] flex-col items-center justify-center gap-3 text-muted"
+            >
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-amber"></div>
+              <span className="text-sm">Laden...</span>
             </div>
-          )}
-
-          {!authState.name ? (
-            <>
-              <AuthForm
-                formState={formState}
-                authState={authState}
-                onEmailChange={handleEmail}
-                onPasswordChange={handlePassword}
-                onTogglePassword={() =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    showPassword: !prev.showPassword,
-                  }))
-                }
-                onRememberMeChange={(checked) =>
-                  setFormState((prev) => ({ ...prev, rememberMe: checked }))
-                }
-                onToggleSignUp={() =>
-                  setAuthState((prev) => ({
-                    ...prev,
-                    isSignUp: !prev.isSignUp,
-                  }))
-                }
-                onForgotPassword={() => void handleForgotPassword()}
-                onSubmit={(e) => void handleEmailAuth(e)}
-                getInputClasses={getInputClasses}
-                getLabelClasses={getLabelClasses}
-                getButtonClasses={getButtonClasses}
-              />
-
-              <div className="mt-6">
-                <GoogleSignInButton
-                  onClick={() => void signIn()}
-                  loading={authState.loading}
-                  getButtonClasses={getButtonClasses}
-                />
-              </div>
-            </>
           ) : (
-            <UserProfile
-              name={authState.name}
-              photoUrl={authState.photoUrl}
-              onSignOut={() => void signOutUser()}
-              onPhotoUpload={handlePhotoUpload}
-              loading={authState.loading}
-            />
+            <>
+              <Header isSignUp={authState.isSignUp} />
+
+              <ErrorMessage error={authState.error} />
+
+              {resetMessage && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="mb-6 p-4 border rounded-xl bg-teal/10 border-teal/30"
+                >
+                  <div className="flex items-start">
+                    <CheckIcon className="w-5 h-5 mr-3 mt-0.5 shrink-0 text-teal" />
+                    <p className="text-sm font-medium text-teal">
+                      {resetMessage}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {!authState.name ? (
+                <>
+                  <AuthForm
+                    formState={formState}
+                    isSignUp={authState.isSignUp}
+                    loading={loadingAction === "email"}
+                    resetLoading={loadingAction === "reset"}
+                    busy={loadingAction !== null}
+                    onEmailChange={handleEmail}
+                    onPasswordChange={handlePassword}
+                    onTogglePassword={() =>
+                      setFormState((prev) => ({
+                        ...prev,
+                        showPassword: !prev.showPassword,
+                      }))
+                    }
+                    onRememberMeChange={(checked) =>
+                      setFormState((prev) => ({ ...prev, rememberMe: checked }))
+                    }
+                    onToggleSignUp={() =>
+                      setAuthState((prev) => ({
+                        ...prev,
+                        isSignUp: !prev.isSignUp,
+                      }))
+                    }
+                    onForgotPassword={() => void handleForgotPassword()}
+                    onSubmit={(e) => void handleEmailAuth(e)}
+                    getInputClasses={getInputClasses}
+                    getLabelClasses={getLabelClasses}
+                    getButtonClasses={getButtonClasses}
+                  />
+
+                  <div className="mt-6">
+                    <GoogleSignInButton
+                      onClick={() => void signIn()}
+                      loading={loadingAction === "google"}
+                      busy={loadingAction !== null}
+                      getButtonClasses={getButtonClasses}
+                    />
+                  </div>
+                </>
+              ) : (
+                <UserProfile
+                  name={authState.name}
+                  photoUrl={authState.photoUrl}
+                  onSignOut={() => void signOutUser()}
+                  onPhotoUpload={handlePhotoUpload}
+                  loading={loadingAction === "signout"}
+                />
+              )}
+            </>
           )}
         </div>
       </div>
